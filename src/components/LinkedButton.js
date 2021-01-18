@@ -4,24 +4,20 @@ import styled from 'styled-components'
 
 const StyledButton = styled(Link)`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 4px;
-  /* margin: 1rem; */
-  padding: 2rem;
-  width: 40%;
-  font-size: 1rem;
-  color: white;
-  font-weight: bold;
+  flex-direction: row;
+  border-radius: 12px;
+  width: 90%;
   text-decoration: none;
-  background: #228be6;
+  background: #fff;
+  border: 2px #228be6 solid;
   &:hover {
-    background: #339af0;
+    border: 2px red solid;
   }
-  &:active {
+  /* &:active {
     background: #1c7ed6;
-  }
+    border: 2px #fff solid;
+  } */
+  
 `;
 
 function LinkedButton({ children, ...rest }) {

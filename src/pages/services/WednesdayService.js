@@ -1,30 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useForm } from "react-hook-form";
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components'
 import { Firebase, db } from '../../config/firebaseConfig'
+import { SettingContext } from '../../context/SettingContext'
 
+import NavBar from '../../components/NavBar'
 
 
 const WednesdayService = () => {
+  const [ setting, setSetting ] = useContext(SettingContext)
   const [ disabled, setDisabled ] = useState(false)
   const { register, handleSubmit, errors } = useForm()
+  const history = useHistory();
 
-  const reservationDate = '20210120wed'
-  const increment = Firebase.firestore.FieldValue.increment(1)
-  const statsRef = db.collection(reservationDate).doc('--stats--');
-  const newuserRef = db.collection(reservationDate).doc();
+  const decrement = Firebase.firestore.FieldValue.increment(-1)
+  const statsRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc('--stats--');
+  const newuserRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc();
 
   const batch = db.batch();
 
-  // const onSubmit = data => {
-  //   const submitData = {
-  //     ...data,
-  //     submitTime: new Date()
-  //   }
-  //   batch.set(newuserRef, submitData);
-  //   batch.set(statsRef, { storyCount: increment }, {merge: true})
-  //   batch.commit()
-  // }
+  // 초기화 관리자에서 진행해야겠다.
+  // if (!statsDoc.exists) {
+  //   statsRef.set({ ReservationCount: 0 })
+  // } 
 
   const onSubmit = data => {
     const submitData = {
@@ -33,61 +32,72 @@ const WednesdayService = () => {
     }
     return db.runTransaction((transaction) => {
       return transaction.get(statsRef).then((statsDoc) => {
-        if (statsDoc.data().storyCount < 20){
+        if (statsDoc.data().ReservationCount > 0){
           batch.set(newuserRef, submitData);
-          batch.set(statsRef, { storyCount: increment }, {merge: true})
+          batch.set(statsRef, { ReservationCount: decrement }, {merge: true})
           batch.commit()
-          return submitData
         } else {
           setDisabled(true)
-          alert('신청인원이 넘어 마감되었습니다')
+          console.log('예약실패')
+          history.push({
+            pathname: "/service-register/result", 
+            state: {
+              result: false, 
+              detail: submitData
+            }
+          })
           return Promise.reject('실패')
+          
         }
       })
     }).then(() => {
-      alert('예배신청에 성공했습니다')
       setDisabled(true)
+      console.log('예약성공')
+      history.push({
+        pathname: "/service-register/result", 
+        state: {
+          result: true, 
+          detail: submitData
+        }
+      })
     }).catch((error) => {
       console.log(error)
     })
   }
 
+  let latestDay = new Date();
+  latestDay.setDate(latestDay.getDate() + (3 + 7 - latestDay.getDay()) % 7);
+
   return (
     <Container>
-      <Header>1월 20일 수요예배 신청</Header>
+      <NavBar />
+      <Header>{latestDay.getMonth()+1}월 {latestDay.getDate()}일 수요예배 신청</Header>
       <InserForm onSubmit={handleSubmit(onSubmit)} style={{display:'flex', flexDirection:'column'}}>
         <InputContainer>
           <Title>이름</Title>
           <Input name="name" placeholder="이름을 입력해주세요" ref={register({ required: true})}/>
-          {errors.name && <text style={{color: 'red', marginTop: 5, marginLeft: 5}}>이름을 입력해주세요</text>}
+          {errors.name && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>이름을 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
           <Title>직분</Title>
           <Input name="position" placeholder="장로/권사/집사/성도/청년/학생" ref={register({ required: true})} />
-          {errors.position && <text style={{color: 'red', marginTop: 5, marginLeft: 5}}>직분을 입력해주세요</text>}
+          {errors.position && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>직분을 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
           <Title>소속</Title>
-          <Input name="division" placeholder="남선교회/여선교회/시니어/청장년/영커플/청년" ref={register({ required: true})}/>
-          {errors.division && <text style={{color: 'red', marginTop: 5, marginLeft: 5}}>소속을 입력해주세요</text>}
+          <Input name="division" placeholder="남선교회/여선교회/시니어/청장년/영커플/인터치" ref={register({ required: true})}/>
+          {errors.division && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>소속을 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
           <SubmitButton type="submit" disabled={disabled}>예배신청하기</SubmitButton>
         </InputContainer>
       </InserForm>
-
-      <Footer>
-        {'© '}
-        {new Date().getFullYear()}
-        <FooterButton to="/reservation">&nbsp;ANOINTING HWAYANG</FooterButton>
-      </Footer>
     </Container>
   )
 }
 
 const Container = styled.div`
   display: flex;
-  height: 100vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -96,14 +106,13 @@ const Container = styled.div`
 const Header = styled.div`
   display: flex;
   justify-content: center;
-  margin: 12px 0 0;
-  font-size: 32px;
+  margin: 1.5rem 0 0;
+  font-size: 2rem;
   font-weight: 700;
 `;
 
 const InserForm = styled.form`
-  padding: 12px;
-  height: 80%;
+  padding: 1rem;
   width: 80%;
   display: flex;
   justify-content: center;
@@ -112,50 +121,38 @@ const InserForm = styled.form`
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 14px 0;
+  margin: 1rem 0;
 `;
 
 const Title = styled.label`
   width: 100%;
-  margin-bottom: 6px;
-  font-size: 16px;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
   color: #222;
 `;
 
 const Input = styled.input`
   width: 100%;
-  border-radius:4px;
+  border-radius: 6px;
   border: 2px solid #228be6;
-  padding: 12px;
+  padding: 0.75rem;
   outline: none;
-  font-size: 16px;
+  font-size: 1rem;
   box-sizing: border-box;
 `;
 
 const SubmitButton = styled.button`
   width: 100%;
-  padding: 12px;
-  margin: 12px 0;
+  padding: 0.75rem;
+  margin: 0.75rem 0;
   color: #fff;
   background-color: #228be6;
   border: 2px solid #228be6;
   border-radius: 4px;
   outline: none;
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
-`;
-
-const Footer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-`;
-
-const FooterButton = styled.div`
-  border: none;
-  text-decoration: none;
-  cursor: default;
 `;
 
 export default WednesdayService;

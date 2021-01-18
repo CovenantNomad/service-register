@@ -1,107 +1,72 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components'
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import LinkedButton from '../components/LinkedButton'
+import { SettingContext } from '../context/SettingContext'
+import { CounterContext } from '../context/CounterContext'
+import { Firebase, db } from '../config/firebaseConfig'
 
-// const VIEW_HEIGHT = window.innerHeight
+import Timer from '../components/Timer'
+import ServiceButton from '../components/ServiceButton'
+// import Footer from '../components/Footer'
+
 
 const LandingPage = () => {
-  const [ openWed, setOpenWed ] = useState(false)
-  const [ openFri, setOpenFri ] = useState(false)
-  const [ openSun, setOpenSun ] = useState(false)
-
-  let interval = useRef()
-
-  const startTimer = () => {
-    const countdownDate = new Date('Dec 27, 2020 18:00:00').getTime();
-
-    interval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = countdownDate - now;
-
-      if (distance < 0 ) {
-        // stop our timer
-        clearInterval(interval)
-        setOpenWed(true)
-      } 
-    }, 1000);
-  }
+  const [ setting, setSetting ] = useContext(SettingContext)
+  const [ counter, setCounter ] = useContext(CounterContext)
 
   useEffect(() => {
-    startTimer()
-  }, [openWed, openFri, openSun])
+    db.collection('수요예배').doc('1부').collection('20210120').doc('--stats--').onSnapshot((doc) => {
+      const tempCount = doc.data().ReservationCount
+      setCounter({
+        ...counter,
+        remainingWednesDay: tempCount})
+    })
+  }, [])
 
-  const handleClickWed = (e) => {
-    if (!openWed) {
-      e.preventDefault()
-    }
-  }
-
-  const handleClickFri = (e) => {
-    if (!openFri) {
-      e.preventDefault()
-    }
-  }
-
-  const handleClickSun = (e) => {
-    if (!openSun) {
-      e.preventDefault()
-    }
-  }
-
+  
   return (
     <Container>
       <Header>화양교회 예배신청 페이지</Header>
-      <SubHeader>태초에 하나님이 천지를 창조하시니라 (창 1:1)</SubHeader>
+      <SubHeader>
+        <div>아버지께서는 자기에게 이렇게 예배하는 자들을 찾으시느니라</div>
+        <div>(요 4:23)</div>
+      </SubHeader>
 
-      <LinkedButton to="/wednesday" onClick={handleClickWed} style={{margin: '20px 0'}}>
-        <IconContainer>
-          <AssignmentTurnedInIcon />
-        </IconContainer>
-        <TextContainer>
-        <text style={{fontSize: 24, marginBottom: 10}}>수요예배</text>
-          {openWed ? (
-            <text style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>예배신청이 가능합니다</text>
-          ) : (
-            <text style={{fontSize: 16, fontWeight: 400, color:'black'}}>예배 신청 전입니다</text>
-          )}
-        </TextContainer>
-      </LinkedButton>
+      <Timer />
 
-      <LinkedButton to="/friday" onClick={handleClickFri} style={{margin: '20px 0'}}>
-        <IconContainer>
-          <AssignmentTurnedInIcon />
-        </IconContainer>
-        <TextContainer>
-        <text style={{fontSize: 24, marginBottom: 10}}>금요예배</text>
-          {openFri ? (
-            <text style={{fontSize: 16, fontWeight: 400, color:'#8022D9'}}>예배신청이 가능합니다</text>
-          ) : (
-            <text style={{fontSize: 16, fontWeight: 400, color:'black'}}>예배 신청 전입니다</text>
-          )}
-        </TextContainer>
-      </LinkedButton>
+      <ServiceButton 
+        days='수요일' 
+        title='수요예배' 
+        time={["7시30분"]}
+        open={setting.openWednesDay} 
+        remaining={[counter.remainingWednesDay]} 
+        linkTo="/service-register/wednesday"
+      />
 
-      <LinkedButton to="/sunday" onClick={handleClickSun} style={{margin: '20px 0'}}>
-        <IconContainer>
-          <AssignmentTurnedInIcon />
-        </IconContainer>
-        <TextContainer>
-          <text style={{fontSize: 24, marginBottom: 10}}>주일예배</text>
-          {openSun ? (
-            <text style={{fontSize: 16, fontWeight: 400, color:'red'}}>예배신청이 가능합니다</text>
-          ) : (
-            <text style={{fontSize: 16, fontWeight: 400, color:'black'}}>예배 신청 전입니다</text>
-          )}
-        </TextContainer>
-      </LinkedButton>
+      <ServiceButton 
+        days='금요일' 
+        title='금요성령집회' 
+        time={["8시00분"]}
+        open={setting.openFriDay} 
+        remaining={[counter.remainingFriDay]} 
+        linkTo="/service-register/friday"
+      />
+
+      <ServiceButton 
+        days='일요일' 
+        title='주일예배' 
+        time={["8시00분", "9시30분", "11시00분", "16시00분"]}
+        open={setting.openSunDay} 
+        remaining={[counter.remainingSunDayFirst, counter.remainingSunDaySecond, counter.remainingSunDayThird, counter.remainingSunDayFourth]}
+        linkTo="/service-register/sunday"
+      />
+
+      {/* <Footer /> */}
     </Container>
   )
 }
 
 const Container = styled.div`
   display: flex;
-  height: 100vh;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -110,28 +75,23 @@ const Container = styled.div`
 const Header = styled.div`
   display: flex;
   justify-content: center;
-  margin: 12px 0 0;
-  font-size: 32px;
+  margin: 2rem 0 0;
+  font-size: 2.25rem;
   font-weight: 700;
+
 `;
 
 const SubHeader = styled.div`
   display: flex;
-  justify-content: center;
-  margin: 12px 0 24px;
-  font-size: 14px;
-  font-weight: 400;
-`;
-
-const IconContainer = styled.div`
-  flex: 1;
-`;
-
-const TextContainer = styled.div`
-  flex: 2;
-  display: flex;
   flex-direction: column;
+  align-items: center;
+  margin: 1rem 0 2rem;
+  font-size: 1rem;
+  font-weight: 400;
+  flex-wrap: wrap;
+  width: 90%;
 `;
+
 
 
 
