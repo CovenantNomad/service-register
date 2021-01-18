@@ -20,11 +20,11 @@ function App() {
         <Container>
           <GlobalStyle />
             <Switch>
-              <Route path={'/wednesday'} component={WednesdayService} />
-              <Route path={'/friday'} component={FridayService} />
-              <Route path={'/sunday'} component={SundayService} />
-              <Route path={'/reservation'} component={ReservationPage} />
-              <Route path={'/'} component={LandingPage} />
+              <Route exact path={'/wednesday'} component={WednesdayService} />
+              <Route exact path={'/friday'} component={FridayService} />
+              <Route exact path={'/sunday'} component={SundayService} />
+              <Route exact path={'/reservation'} component={ReservationPage} />
+              <Route exact path={'/service-register'} component={LandingPage} />
             </Switch>
         </Container>
       </Wrapper>

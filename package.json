@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^12.1.10",
     "firebase": "^8.2.3",
     "fontsource-roboto": "^4.0.0",
+    "gh-pages": "^3.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^6.14.1",
@@ -21,8 +22,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prebuild": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -41,5 +43,7 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "https://covenantnomad.github.io/service-register"
+
 }
