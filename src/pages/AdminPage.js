@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components'
 import { db } from '../config/firebaseConfig'
 
@@ -18,7 +18,7 @@ function fillZero(width, str){
 }
 
 const AdminPage = () => {
-
+  const [ userlist, setUserlist ] = useState()
   const batch = db.batch();
   
   let wednesday = new Date();
@@ -69,28 +69,49 @@ const AdminPage = () => {
     });
 }
 
-const onClickSunDay = () => {
-  const secondRef = db.collection('주일').doc('2부').collection(sundayString).doc('--stats--')
-  batch.set(secondRef, { ReservationCount: 70 })
-  const thirdRef = db.collection('주일').doc('3부').collection(sundayString).doc('--stats--')
-  batch.set(thirdRef, { ReservationCount: 70 })
-  const forthRef = db.collection('주일').doc('4부').collection(sundayString).doc('--stats--')
-  batch.set(forthRef, { ReservationCount: 70 })
-  const sixthRef = db.collection('주일').doc('6부').collection(sundayString).doc('--stats--')
-  batch.set(sixthRef, { ReservationCount: 70 })
-  const settingRef = db.collection('디비세팅').doc('최신일자')
-  batch.update(settingRef, {
-    title: "주일예배",
-    reservationDate: sundayString.toString()
-  })
-  batch.commit()
-  .then(() => {
-    console.log("Document successfully written!");
-  })
-  .catch((error) => {
-      console.error("Error writing document: ", error);
-  });
-}
+  const onClickSunDay = () => {
+    const secondRef = db.collection('주일').doc('2부').collection(sundayString).doc('--stats--')
+    batch.set(secondRef, { ReservationCount: 70 })
+    const thirdRef = db.collection('주일').doc('3부').collection(sundayString).doc('--stats--')
+    batch.set(thirdRef, { ReservationCount: 70 })
+    const forthRef = db.collection('주일').doc('4부').collection(sundayString).doc('--stats--')
+    batch.set(forthRef, { ReservationCount: 70 })
+    const sixthRef = db.collection('주일').doc('6부').collection(sundayString).doc('--stats--')
+    batch.set(sixthRef, { ReservationCount: 70 })
+    const settingRef = db.collection('디비세팅').doc('최신일자')
+    batch.update(settingRef, {
+      title: "주일예배",
+      reservationDate: sundayString.toString()
+    })
+    batch.commit()
+    .then(() => {
+      console.log("Document successfully written!");
+    })
+    .catch((error) => {
+        console.error("Error writing document: ", error);
+    });
+  }
+
+  const onClickLookUp = () => {
+    db.collection('수요예배').doc('1부').collection('20210120').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setUserlist(tempArray)
+    })
+  }
+
+  const cleanUpList = userlist.filter(item => item.id !== "--stats--")
+
+  const converTime = (timestamp) => {
+    let date = new Date(timestamp * 1000)
+    let hours = date.getHours();
+    let minutes = "0" + date.getMinutes();
+    let seconds = "0" + date.getSeconds();
+    let formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    return formattedTime
+  }
 
   return (
     <Container>
@@ -110,7 +131,9 @@ const onClickSunDay = () => {
           <Button onClick={() => onClickSunDay()}>{sunday.getFullYear()}년 {sunday.getMonth()+1}월 {sunday.getDate()}일</Button>
         </Setting>
       </SettingContainer>
+
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>
+      <LookupButton onClick={onClickLookUp}>조회</LookupButton>
 
       <TableContainer component={Paper}>
         <Table aria-label="simple table" style={{minWidth: 250}}>
@@ -120,12 +143,26 @@ const onClickSunDay = () => {
               <TableCell align="center">이름</TableCell>
               <TableCell align="center">직분</TableCell>
               <TableCell align="center">소속(선교회)</TableCell>
+              <TableCell align="center">시간</TableCell>
             </TableRow>
           </TableHead>
+          {userlist && (
+            <>
+            {cleanUpList.map((user, index) => (
+              <TableBody>
+                <TableRow key={user.id}>
+                  <TableCell align="center">{index}</TableCell>
+                  <TableCell align="center">{user.name}</TableCell>
+                  <TableCell align="center">{user.position}</TableCell>
+                  <TableCell align="center">{user.division}</TableCell>
+                  <TableCell align="center">{converTime(user.submitTime)}</TableCell>
+                </TableRow>
+              </TableBody>
+            ))}  
+            </>
+          )}
         </Table>
       </TableContainer>
-
-
     </Container>
     
   )
@@ -152,6 +189,12 @@ const Title = styled.div`
   padding: 1rem;
   width: 150px;
 
+`;
+
+const LookupButton = styled.button`
+  border: 2px solid #228be6;
+  padding: 1rem;
+  margin-bottom: 1rem;
 `;
 
 

@@ -10,9 +10,9 @@ const NavBar = () => {
 
   return (
     <AppBar>
-      <IconContainer to="/service-register/main">
+      {/* <IconContainer to="/service-register/main">
         <ArrowBackIcon fontSize='small'/>
-      </IconContainer>
+      </IconContainer> */}
       <LogoText>ANOINTING HWAYANG</LogoText>
       <IconContainer to={isLoggedIn ? "/service-register/admin": "/service-register/auth"}>
         <SettingsIcon fontSize='small'/>
@@ -44,6 +44,7 @@ const LogoText = styled.div`
   font-weight: 600;
   color: #fff;
   flex: 1;
+  margin-left: 1rem;
 `;
 
 

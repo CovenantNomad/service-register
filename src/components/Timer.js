@@ -83,7 +83,7 @@ const Timer = () => {
 }
 
 const BackgroundContainer = styled.div`
-  background-color: black;
+  background-color: #73c6c9;
   /* box-sizing: border-box; */
   width: 90%;
   color: #fff;

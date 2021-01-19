@@ -3,13 +3,20 @@ import styled from 'styled-components'
 import { useLocation } from "react-router-dom";
 
 import NavBar from '../components/NavBar'
-import LinkedButton from '../components/LinkedButton'
+import Button from '../components/Button'
 
 const VIEW_HEIGHT = window.innerHeight
 
 const ResultPage = () => {
   const location = useLocation();
   const result = location.state
+
+  const onClickClose = () => {
+    window.open('','_self').close(); 
+    // 모바일에서 페이지 닫기
+    window.location.href="kakaotalk://inappbrowser/close"
+  }
+
   return (
     <Container>
       <NavBar />
@@ -27,21 +34,10 @@ const ResultPage = () => {
           <div>예배신청이 마감되었습니다.</div>
           </>
         )}
-        <LinkedButton 
-          to="/service-register/main"
-          style={{
-            textDecoration: 'none', 
-            color:'#222', 
-            display: 'flex', 
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '1rem',
-            borderRadius: 6,
-            marginTop: '1.5rem'
-            }}
-        >
-          처음화면으로
-        </LinkedButton>
+        <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>
+        <div>- 안내 -</div>
+        <div>신청을 하신 후에는 반드시 페이지를 닫아주세요.</div>
+        <div>다시 신청하시려면 페이지를 닫고, 다시 접속해주세요</div>
       </ResultContainer>
       
     </Container>
@@ -59,6 +55,16 @@ const Container = styled.div`
 const ResultContainer = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CloseButton = styled.div`
+  margin: 20px 0;
+  border: 2px solid #228be6;
+  color: #222;
+  padding: 10px;
+  display: flex;
   justify-content: center;
   align-items: center;
 `;

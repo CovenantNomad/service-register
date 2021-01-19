@@ -35,6 +35,7 @@ function App() {
                   <Route exact path={'/service-register/result'} component={Resultpage} />
                   <Route exact path={'/service-register/auth'} component={AuthPage} />
                   <Route exact path={'/service-register/admin'} component={AdminPage} />
+                  
                 </Switch>
               </Container>
             </Wrapper>

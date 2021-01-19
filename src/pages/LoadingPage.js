@@ -8,12 +8,14 @@ const LoadingPage = () => {
   const [ setting, setSetting ] = useContext(SettingContext)
   const history = useHistory();
 
-  const initialize = () => {
+  const initialize = async () => {
     const settingRef = db.collection('디비세팅').doc('최신일자')
-    settingRef.get().then((doc) => {
+    await settingRef.get().then((doc) => {
+      console.log(doc)
       if (doc.exists) {
         setSetting({
           ...setting,
+          init: true,
           title: doc.data().title,
           reservationDate: doc.data().reservationDate
         })
@@ -30,16 +32,14 @@ const LoadingPage = () => {
     console.log('무한루프체크')
     if (!setting.init) {
       initialize()
-      setSetting({
-        ...setting,
-        init: true
-      })
-      console.log(setting)
-      history.push({
-        pathname: "/service-register/main"
-      })
-    }
-  }, [])
+      .then(()=>{
+        history.push({
+          pathname: "/service-register/main"
+        })
+      })}
+  })
+
+  console.log(setting)
 
   return (
     <Container>

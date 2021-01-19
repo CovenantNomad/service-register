@@ -19,6 +19,8 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
   const handleClick = (e) => {
     if (!open) {
       e.preventDefault()
+    } else if (open && remaining[0] <= 0) {
+      e.preventDefault()
     }
   }
 
@@ -66,10 +68,10 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[0] === 0 ? (
-                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
-                  ) : (
+                  {open && remaining[0] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                  ) : (
+                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                   )}
                   </>
                 )}
