@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components'
@@ -11,9 +11,8 @@ import { Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 
 const SundayService = () => {
   const [ setting ] = useContext(SettingContext)
-  const { register, handleSubmit, errors, formState, control, watch } = useForm()
+  const { register, handleSubmit, errors, formState, control } = useForm()
   const history = useHistory();
-  const inputRef = useRef();
 
   console.log(setting)
 
@@ -30,8 +29,8 @@ const SundayService = () => {
         ...data,
         submitTime: new Date()
       }
-      const statsRef = db.collection(setting.title).doc(watch('serviceTime')).collection(setting.reservationDate).doc('--stats--');
-      const newuserRef = db.collection(setting.title).doc(watch('serviceTime')).collection(setting.reservationDate).doc();
+      const statsRef = db.collection(setting.title).doc(data.serviceTime).collection(setting.reservationDate).doc('--stats--');
+      const newuserRef = db.collection(setting.title).doc(data.serviceTime).collection(setting.reservationDate).doc();
 
       return db.runTransaction((transaction) => {
         return transaction.get(statsRef).then((statsDoc) => {
@@ -71,10 +70,6 @@ const SundayService = () => {
 
   let latestDay = new Date();
   latestDay.setDate(latestDay.getDate() + (0 + 7 - latestDay.getDay()) % 7);
-
-  let renderCount = 0;
-  renderCount++;
-  console.log('렌더링 중 : ', renderCount)
 
   return (
     <Container>

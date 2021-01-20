@@ -1,25 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components'
 
+import { SettingContext } from '../context/SettingContext'
 import LinkedButton from './LinkedButton'
 
-const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
-  const getDays = (days) => {
-    if (days === '수요일') {
-      return 3
-    } else if (days === '금요일') {
-      return 5
-    } else if (days === '일요일') {
-      return 0
-    }
-  }
+const SundayServiceButton = ({ remaining, linkTo}) => {
+  const [ setting ] = useContext(SettingContext)
+
   let latestDay = new Date();
-  latestDay.setDate(latestDay.getDate() + (getDays(days) + 7 - latestDay.getDay()) % 7);
+  latestDay.setDate(latestDay.getDate() + (0 + 7 - latestDay.getDay()) % 7);
 
   const handleClick = (e) => {
-    if (!open) {
+    if (!setting.openSunDay) {
       e.preventDefault()
-    } else if (open && remaining[0] <= 0) {
+    } else if (setting.openSunDay && remaining[0] <= 0 && remaining[1] <= 0 && remaining[2] <= 0 && remaining[3] <= 0 ) {
       e.preventDefault()
     }
   }
@@ -29,46 +23,24 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
       <DateContainer>
         <div style={{fontSize: 24, fontWeight: 700}}>{latestDay.getMonth()+1}월</div>
         <div style={{fontSize: 24, fontWeight: 700}}>{latestDay.getDate()}일</div>
-        <div style={{fontSize: 12 }}>{days}</div>
+        <div style={{fontSize: 12 }}>주일</div>
       </DateContainer>
       <InfoContainer>
         <Header>
-          <div style={{fontSize: 24, fontWeight: 700}} >{title}</div>
+          <div style={{fontSize: 24, fontWeight: 700}} >주일예배</div>
         </Header>
-        {time.length < 2 ? (
-          <BodyContainer>
-            <TimeContainer>
-              <div>저녁</div>
-              <div>{time[0]}</div>
-            </TimeContainer>
-            <AvailableContainer>
-              {!open ? (
-                <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
-              ):(
-                <>
-                {open && remaining[0] > 0 ? (
-                  <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
-                ) : (
-                  <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
-                )}
-                </>
-              )}
-            </AvailableContainer>
-            <CounterContainer>{remaining[0]}/70명</CounterContainer>
-          </BodyContainer>
-        ):(
           <div style={{display: 'flex', flexDirection:'column'}}>
             <BodyContainer>
               <TimeContainer>
                 <div>2부</div>
-                <div>{time[0]}</div>
+                <div>오전 8시 00분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!open ? (
+                {!setting.openSunDay ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[0] > 0 ? (
+                  {setting.openSunDay && remaining[0] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -76,19 +48,21 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   </>
                 )}
               </AvailableContainer>
-              <CounterContainer>{remaining[0]}/70명</CounterContainer>
+              <CounterContainer>
+                {remaining[0] < 0 ? 0 : remaining[0]}/70명
+              </CounterContainer>
             </BodyContainer>
             <BodyContainer>
               <TimeContainer>
                 <div>3부</div>
-                <div>{time[1]}</div>
+                <div>오전 9시 30분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!open ? (
+                {!setting.openSunDay ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[1] > 0 ? (
+                  {setting.openSunDay && remaining[1] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -96,20 +70,22 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   </>
                 )}
               </AvailableContainer>
-              <CounterContainer>{remaining[1]}/70명</CounterContainer>
+              <CounterContainer>
+                {remaining[1] < 0 ? 0 : remaining[1]}/70명
+              </CounterContainer>
             </BodyContainer>
             
             <BodyContainer>
               <TimeContainer>
                 <div>4부</div>
-                <div>{time[2]}</div>
+                <div>오전 11시 00분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!open ? (
+                {!setting.openSunDay ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[2] > 0 ? (
+                  {setting.openSunDay && remaining[2] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -117,20 +93,22 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   </>
                 )}
               </AvailableContainer>
-              <CounterContainer>{remaining[2]}/40명</CounterContainer>
+              <CounterContainer>
+                {remaining[2] < 0 ? 0 : remaining[2]}/40명
+              </CounterContainer>
             </BodyContainer>
             
             <BodyContainer>
               <TimeContainer>
                 <div>6부</div>
-                <div>{time[3]}</div>
+                <div>오후 4시 00분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!open ? (
+                {!setting.openSunDay ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[3] > 0 ? (
+                  {setting.openSunDay && remaining[3] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -138,10 +116,11 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   </>
                 )}
               </AvailableContainer>
-              <CounterContainer>{remaining[3]}/70명</CounterContainer>
+              <CounterContainer>
+                {remaining[3] < 0 ? 0 : remaining[3]}/70명
+              </CounterContainer>
             </BodyContainer>
           </div>
-        )}
       </InfoContainer>
     </LinkedButton>
   )
@@ -195,4 +174,4 @@ const CounterContainer = styled.div`
   justify-content: center;
 `;
 
-export default React.memo(ServiceButton);
+export default SundayServiceButton;

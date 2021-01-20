@@ -15,9 +15,6 @@ const WednesdayService = () => {
   const history = useHistory();
 
   const decrement = Firebase.firestore.FieldValue.increment(-1)
-  const statsRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc('--stats--');
-  const newuserRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc();
-
   const batch = db.batch();
 
   const onSubmit = async data => {
@@ -28,6 +25,8 @@ const WednesdayService = () => {
         ...data,
         submitTime: new Date()
       }
+      const statsRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc('--stats--');
+      const newuserRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc();
       return db.runTransaction((transaction) => {
         return transaction.get(statsRef).then((statsDoc) => {
           if (statsDoc.data().ReservationCount > 0){

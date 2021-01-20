@@ -3,7 +3,6 @@ import { BrowserRouter, Switch, Route  } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 
 import { SettingProvider } from './context/SettingContext'
-import { CounterProvider } from './context/CounterContext'
 import { UserProvider } from './context/UserContext'
 
 // import NavBar from './components/NavBar'
@@ -20,27 +19,25 @@ function App() {
 
   return (
     <SettingProvider>
-      <CounterProvider>
-        <UserProvider>
-          <BrowserRouter>
-            <GlobalStyle />
-            <Wrapper>
-              <Container>
-                <Switch>
-                  <Route exact path={'/service-register/'} component={LoadingPage} />
-                  <Route exact path={'/service-register/main'} component={LandingPage} />
-                  <Route exact path={'/service-register/wednesday'} component={WednesdayService} />
-                  <Route exact path={'/service-register/friday'} component={FridayService} />
-                  <Route exact path={'/service-register/sunday'} component={SundayService} />
-                  <Route exact path={'/service-register/result'} component={Resultpage} />
-                  <Route exact path={'/service-register/auth'} component={AuthPage} />
-                  <Route exact path={'/service-register/admin'} component={AdminPage} />
-                </Switch>
-              </Container>
-            </Wrapper>
-          </BrowserRouter>
-        </UserProvider>
-      </CounterProvider>
+      <UserProvider>
+        <BrowserRouter>
+          <GlobalStyle />
+          <Wrapper>
+            <Container>
+              <Switch>
+                <Route exact path={'/service-register/'} component={LoadingPage} />
+                <Route exact path={'/service-register/main'} component={LandingPage} />
+                <Route exact path={'/service-register/wednesday'} component={WednesdayService} />
+                <Route exact path={'/service-register/friday'} component={FridayService} />
+                <Route exact path={'/service-register/sunday'} component={SundayService} />
+                <Route exact path={'/service-register/result'} component={Resultpage} />
+                <Route exact path={'/service-register/auth'} component={AuthPage} />
+                <Route exact path={'/service-register/admin'} component={AdminPage} />
+              </Switch>
+            </Container>
+          </Wrapper>
+        </BrowserRouter>
+      </UserProvider>
     </SettingProvider>
 
   );

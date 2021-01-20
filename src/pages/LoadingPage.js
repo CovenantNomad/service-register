@@ -1,8 +1,8 @@
 import React, {useContext, useEffect} from 'react';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components'
 import { SettingContext } from '../context/SettingContext'
 import { db } from '../config/firebaseConfig'
+import styled from 'styled-components'
 
 const LoadingPage = () => {
   const [ setting, setSetting ] = useContext(SettingContext)
@@ -23,7 +23,7 @@ const LoadingPage = () => {
         console.log("데이터가 없습니다.")
       }
     }).catch((error) => {
-      console.log("@initialize Errors: ", error)
+      console.log("Errors @initialize: ", error)
     })
   }
 
