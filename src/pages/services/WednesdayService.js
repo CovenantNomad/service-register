@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useForm } from "react-hook-form";
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components'
@@ -6,12 +6,12 @@ import { Firebase, db } from '../../config/firebaseConfig'
 import { SettingContext } from '../../context/SettingContext'
 
 import NavBar from '../../components/NavBar'
+import SelectInput from '@material-ui/core/Select/SelectInput';
 
 
 const WednesdayService = () => {
-  const [ setting, setSetting ] = useContext(SettingContext)
-  const [ disabled, setDisabled ] = useState(false)
-  const { register, handleSubmit, errors } = useForm()
+  const [ setting ] = useContext(SettingContext)
+  const { register, handleSubmit, errors, formState } = useForm()
   const history = useHistory();
 
   const decrement = Firebase.firestore.FieldValue.increment(-1)
@@ -20,49 +20,46 @@ const WednesdayService = () => {
 
   const batch = db.batch();
 
-  // 초기화 관리자에서 진행해야겠다.
-  // if (!statsDoc.exists) {
-  //   statsRef.set({ ReservationCount: 0 })
-  // } 
+  const onSubmit = async data => {
+    if (!formState.isSubmitting){
+      await SelectInput(500);
 
-  const onSubmit = data => {
-    const submitData = {
-      ...data,
-      submitTime: new Date()
+      const submitData = {
+        ...data,
+        submitTime: new Date()
+      }
+      return db.runTransaction((transaction) => {
+        return transaction.get(statsRef).then((statsDoc) => {
+          if (statsDoc.data().ReservationCount > 0){
+            batch.set(newuserRef, submitData);
+            batch.set(statsRef, { ReservationCount: decrement }, {merge: true})
+            batch.commit()
+          } else {
+            console.log('예약실패')
+            history.push({
+              pathname: "/service-register/result", 
+              state: {
+                result: false, 
+                detail: submitData
+              }
+            })
+            return Promise.reject('실패')
+            
+          }
+        })
+      }).then(() => {
+        console.log('예약성공')
+        history.push({
+          pathname: "/service-register/result", 
+          state: {
+            result: true, 
+            detail: submitData
+          }
+        })
+      }).catch((error) => {
+        console.log(error)
+      })
     }
-    return db.runTransaction((transaction) => {
-      return transaction.get(statsRef).then((statsDoc) => {
-        if (statsDoc.data().ReservationCount > 0){
-          batch.set(newuserRef, submitData);
-          batch.set(statsRef, { ReservationCount: decrement }, {merge: true})
-          batch.commit()
-        } else {
-          setDisabled(true)
-          console.log('예약실패')
-          history.push({
-            pathname: "/service-register/result", 
-            state: {
-              result: false, 
-              detail: submitData
-            }
-          })
-          return Promise.reject('실패')
-          
-        }
-      })
-    }).then(() => {
-      setDisabled(true)
-      console.log('예약성공')
-      history.push({
-        pathname: "/service-register/result", 
-        state: {
-          result: true, 
-          detail: submitData
-        }
-      })
-    }).catch((error) => {
-      console.log(error)
-    })
   }
 
   let latestDay = new Date();
@@ -89,7 +86,7 @@ const WednesdayService = () => {
           {errors.division && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>소속을 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
-          <SubmitButton type="submit" disabled={disabled}>예배신청하기</SubmitButton>
+          <SubmitButton type="submit" disabled={formState.isSubmitting}>예배신청하기</SubmitButton>
         </InputContainer>
       </InserForm>
     </Container>

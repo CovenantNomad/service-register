@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components'
 import { db } from '../config/firebaseConfig'
 
-import NavBar from '../components/NavBar'
+import NavBarForAdmin from '../components/NavBarForAdmin'
 import Button from '../components/Button'
 
 import Table from '@material-ui/core/Table';
@@ -18,7 +18,7 @@ function fillZero(width, str){
 }
 
 const AdminPage = () => {
-  const [ userlist, setUserlist ] = useState()
+  const [ userlist, setUserlist ] = useState(false)
   const batch = db.batch();
   
   let wednesday = new Date();
@@ -46,9 +46,11 @@ const AdminPage = () => {
       batch.commit()
       .then(() => {
         console.log("Document successfully written!");
+        alert('업데이트 성공했습니다')
       })
       .catch((error) => {
-          console.error("Error writing document: ", error);
+        console.error("Error writing document: ", error);
+        alert('업데이트 실패했습니다')
       });
   }
 
@@ -63,20 +65,22 @@ const AdminPage = () => {
     batch.commit()
     .then(() => {
       console.log("Document successfully written!");
+      alert('업데이트 성공했습니다')
     })
     .catch((error) => {
-        console.error("Error writing document: ", error);
+      console.error("Error writing document: ", error);
+      alert('업데이트 실패했습니다')
     });
 }
 
   const onClickSunDay = () => {
-    const secondRef = db.collection('주일').doc('2부').collection(sundayString).doc('--stats--')
+    const secondRef = db.collection('주일예배').doc('2부').collection(sundayString).doc('--stats--')
     batch.set(secondRef, { ReservationCount: 70 })
-    const thirdRef = db.collection('주일').doc('3부').collection(sundayString).doc('--stats--')
+    const thirdRef = db.collection('주일예배').doc('3부').collection(sundayString).doc('--stats--')
     batch.set(thirdRef, { ReservationCount: 70 })
-    const forthRef = db.collection('주일').doc('4부').collection(sundayString).doc('--stats--')
+    const forthRef = db.collection('주일예배').doc('4부').collection(sundayString).doc('--stats--')
     batch.set(forthRef, { ReservationCount: 70 })
-    const sixthRef = db.collection('주일').doc('6부').collection(sundayString).doc('--stats--')
+    const sixthRef = db.collection('주일예배').doc('6부').collection(sundayString).doc('--stats--')
     batch.set(sixthRef, { ReservationCount: 70 })
     const settingRef = db.collection('디비세팅').doc('최신일자')
     batch.update(settingRef, {
@@ -86,9 +90,11 @@ const AdminPage = () => {
     batch.commit()
     .then(() => {
       console.log("Document successfully written!");
+      alert('업데이트 성공했습니다')
     })
     .catch((error) => {
-        console.error("Error writing document: ", error);
+      console.error("Error writing document: ", error);
+      alert('업데이트 실패했습니다')
     });
   }
 
@@ -98,11 +104,10 @@ const AdminPage = () => {
         id: doc.id,
         ...doc.data()
       }))
-      setUserlist(tempArray)
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      setUserlist(cleanUpList)
     })
   }
-
-  const cleanUpList = userlist.filter(item => item.id !== "--stats--")
 
   const converTime = (timestamp) => {
     let date = new Date(timestamp * 1000)
@@ -115,7 +120,7 @@ const AdminPage = () => {
 
   return (
     <Container>
-      <NavBar />
+      <NavBarForAdmin />
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>신청 전 예배DB 리셋하기</div>
       <SettingContainer>
         <Setting>
@@ -131,6 +136,8 @@ const AdminPage = () => {
           <Button onClick={() => onClickSunDay()}>{sunday.getFullYear()}년 {sunday.getMonth()+1}월 {sunday.getDate()}일</Button>
         </Setting>
       </SettingContainer>
+
+      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>타이머 세팅하기</div>
 
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>
       <LookupButton onClick={onClickLookUp}>조회</LookupButton>
@@ -148,7 +155,7 @@ const AdminPage = () => {
           </TableHead>
           {userlist && (
             <>
-            {cleanUpList.map((user, index) => (
+            {userlist.map((user, index) => (
               <TableBody>
                 <TableRow key={user.id}>
                   <TableCell align="center">{index}</TableCell>

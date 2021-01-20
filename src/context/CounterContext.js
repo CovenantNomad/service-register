@@ -8,7 +8,7 @@ const CounterProvider = (props) => {
     remainingFriDay: 70,
     remainingSunDayFirst: 70,
     remainingSunDaySecond: 70,
-    remainingSunDayThird: 70,
+    remainingSunDayThird: 40,
     remainingSunDayFourth: 70,
   })
 

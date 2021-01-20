@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { useLocation } from "react-router-dom";
 
 import NavBar from '../components/NavBar'
-import Button from '../components/Button'
 
 const VIEW_HEIGHT = window.innerHeight
 
@@ -35,9 +34,9 @@ const ResultPage = () => {
           </>
         )}
         <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>
-        <div>- 안내 -</div>
-        <div>신청을 하신 후에는 반드시 페이지를 닫아주세요.</div>
-        <div>다시 신청하시려면 페이지를 닫고, 다시 접속해주세요</div>
+        <div>뒤로 가기 버튼만 누르지 마시고 창을 닫아 주세요 *^^*</div>
+        <div>담당교역자가 개인별로 오늘 10시안에 확인 메시지 보내 드리겠습니다</div>
+
       </ResultContainer>
       
     </Container>

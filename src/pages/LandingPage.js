@@ -2,26 +2,60 @@ import React, { useContext, useEffect, useRef } from 'react';
 import styled from 'styled-components'
 import { SettingContext } from '../context/SettingContext'
 import { CounterContext } from '../context/CounterContext'
-import { Firebase, db } from '../config/firebaseConfig'
+import { db } from '../config/firebaseConfig'
 
 import Timer from '../components/Timer'
 import ServiceButton from '../components/ServiceButton'
 // import Footer from '../components/Footer'
 
 const LandingPage = () => {
-  const [ setting, setSetting ] = useContext(SettingContext)
+  const [ setting ] = useContext(SettingContext)
   const [ counter, setCounter ] = useContext(CounterContext)
 
-  const remainingRef = useRef(setting.remainingWednesDay)
+  const remainingFirstRef = useRef(counter.remainingSunDayFirst)
+  const remainingSecondRef = useRef(counter.remainingSunDaySecond)
+  const remainingThirdRef = useRef(counter.remainingSunDayThird)
+  const remainingFourthRef = useRef(counter.remainingSunDayFourth)
 
   useEffect(() => {
-    db.collection('수요예배').doc('1부').collection('20210120').doc('--stats--').onSnapshot((doc) => {
+    db.collection(setting.title.toString()).doc('2부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
       const tempCount = doc.data().ReservationCount
       setCounter({
         ...counter,
-        remainingWednesDay: tempCount})
+        remainingSunDayFirst: tempCount})
     })
-  }, [remainingRef.current])
+
+  }, [remainingFirstRef.current])
+
+  useEffect(() => {
+    db.collection(setting.title.toString()).doc('3부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
+      const tempCount = doc.data().ReservationCount
+      setCounter({
+        ...counter,
+        remainingSunDaySecond: tempCount})
+    })
+
+  }, [remainingSecondRef.current])
+  
+  useEffect(() => {
+    db.collection(setting.title).doc('4부').collection(setting.reservationDate).doc('--stats--').onSnapshot((doc) => {
+      const tempCount = doc.data().ReservationCount
+      setCounter({
+        ...counter,
+        remainingSunDayThird: tempCount})
+    })
+
+  }, [remainingThirdRef.current])
+
+  useEffect(() => {
+    db.collection(setting.title.toString()).doc('6부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
+      const tempCount = doc.data().ReservationCount
+      setCounter({
+        ...counter,
+        remainingSunDayFourth: tempCount})
+    })
+
+  }, [remainingFourthRef.current])
   
   return (
     <Container>

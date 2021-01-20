@@ -46,10 +46,10 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                 <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
               ):(
                 <>
-                {open && remaining[0] === 0 ? (
-                  <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
-                ) : (
+                {open && remaining[0] > 0 ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                ) : (
+                  <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                 )}
                 </>
               )}
@@ -88,10 +88,10 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[1] === 0 ? (
-                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
-                  ) : (
+                  {open && remaining[1] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                  ) : (
+                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                   )}
                   </>
                 )}
@@ -109,15 +109,15 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[2] === 0 ? (
-                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
-                  ) : (
+                  {open && remaining[2] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                  ) : (
+                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                   )}
                   </>
                 )}
               </AvailableContainer>
-              <CounterContainer>{remaining[2]}/70명</CounterContainer>
+              <CounterContainer>{remaining[2]}/40명</CounterContainer>
             </BodyContainer>
             
             <BodyContainer>
@@ -130,10 +130,10 @@ const ServiceButton = ({ days, title, time, open, remaining, linkTo}) => {
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {open && remaining[3] === 0 ? (
-                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
-                  ) : (
+                  {open && remaining[3] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                  ) : (
+                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                   )}
                   </>
                 )}

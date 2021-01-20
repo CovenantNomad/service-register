@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { UserContext } from '../context/UserContext'
 import { auth } from '../config/firebaseConfig'
 
-import NavBar from '../components/NavBar'
+import NavBarForAdmin from '../components/NavBarForAdmin'
 
 
 
@@ -29,7 +29,7 @@ const AuthPage = () => {
 
   return (
     <Container>
-      <NavBar />
+      <NavBarForAdmin />
       <Header>관리자 페이지 로그인</Header>
       <InserForm onSubmit={handleSubmit(onSubmit)} style={{display:'flex', flexDirection:'column'}}>
         <InputContainer>

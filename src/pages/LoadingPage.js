@@ -11,7 +11,6 @@ const LoadingPage = () => {
   const initialize = async () => {
     const settingRef = db.collection('디비세팅').doc('최신일자')
     await settingRef.get().then((doc) => {
-      console.log(doc)
       if (doc.exists) {
         setSetting({
           ...setting,

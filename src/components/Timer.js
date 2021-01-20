@@ -13,7 +13,7 @@ const Timer = () => {
   let interval = useRef()
 
   const startTimer = () => {
-    const countdownDate = new Date('Jan 19, 2021 20:00:00').getTime();
+    const countdownDate = new Date('Jan 21, 2021 20:00:00').getTime();
 
     interval = setInterval(() => {
       const now = new Date().getTime();
@@ -33,12 +33,12 @@ const Timer = () => {
             ...setting,
             openWednesDay: true
           })
-        } else if (setting.title ==="금요성령집회") {
+        } else if (setting.title === "금요성령집회") {
           setSetting({
             ...setting,
             openFriDay: true
           })
-        } else if (setting.title ==="주일예배") {
+        } else if (setting.title === "주일예배") {
           setSetting({
             ...setting,
             openSunDay: true
