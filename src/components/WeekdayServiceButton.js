@@ -101,12 +101,12 @@ const AvailableContainer = styled.div`
   margin-right: 1rem;
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
 `;
 const CounterContainer = styled.div`
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 `;
 

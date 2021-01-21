@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components'
 import { useLocation } from "react-router-dom";
 
@@ -16,6 +16,22 @@ const ResultPage = () => {
     window.location.href="kakaotalk://inappbrowser/close"
   }
 
+  // useEffect(() => {
+  //   if (result) {
+  //     if (result.serviceTime === '1부') {
+  //       db.collection('주일예배').doc('4부').collection('20210124').onSnapshot((snapshot) => {
+  //         const tempArray = snapshot.docs.map((doc) => ({
+  //           id: doc.id,
+  //           ...doc.data()
+  //         }))
+  //         const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+  //         setUserlist(cleanUpList)
+  //       })
+  //     }
+  //   }
+  // })
+  
+
   return (
     <Container>
       <NavBar />
@@ -23,14 +39,14 @@ const ResultPage = () => {
         {result.result ? (
           <>
             <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{result.detail.name} {result.detail.position}님 </div>
-            <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'blue'}}>예배신청에 성공하셨습니다.</div>
+            <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'blue'}}>{result.detail.serviceTime} 예배신청에 성공하셨습니다.</div>
             <div>많은 은혜 받으시길 바랍니다</div>
           </>
         ) : (
           <>
           <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{result.detail.name} {result.detail.position}님</div>
           <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'blue'}}>죄송합니다.</div>
-          <div>예배신청이 마감되었습니다.</div>
+          <div>{result.detail.serviceTime} 예배신청이 마감되었습니다.</div>
           </>
         )}
         <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>

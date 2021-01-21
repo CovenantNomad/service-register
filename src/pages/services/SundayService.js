@@ -97,6 +97,11 @@ const SundayService = () => {
             as={
               <RadioGroup aria-label="예배시간" style={{paddingLeft: '1rem'}} >
                 <FormControlLabel
+                  value="1부"
+                  control={<Radio />}
+                  label="1부 영상예배 (오전 7시 10분)"
+                />
+                <FormControlLabel
                   value="2부"
                   control={<Radio />}
                   label="2부예배 (오전 8시 00분)"
@@ -114,13 +119,13 @@ const SundayService = () => {
                 <FormControlLabel
                   value="6부"
                   control={<Radio />}
-                  label="6부예배 (오후 4시 00분)"
+                  label="6부 영상예배 (오후 4시 00분)"
                 />
               </RadioGroup>
             }
             name="serviceTime"
             control={control}
-            defaultValue={"2부"}
+            defaultValue={"1부"}
             rules={{ required: true }}
           />
           {errors.serviceTime && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>예배시간을 선택해주세요</div>}

@@ -13,7 +13,7 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
   const handleClick = (e) => {
     if (!setting.openSunDay) {
       e.preventDefault()
-    } else if (setting.openSunDay && remaining[0] <= 0 && remaining[1] <= 0 && remaining[2] <= 0 && remaining[3] <= 0 ) {
+    } else if (setting.openSunDay && remaining[0] <= 0 && remaining[1] <= 0 && remaining[2] <= 0 && remaining[3] <= 0 && remaining[4] <= 0) {
       e.preventDefault()
     }
   }
@@ -32,8 +32,8 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
           <div style={{display: 'flex', flexDirection:'column'}}>
             <BodyContainer>
               <TimeContainer>
-                <div>2부</div>
-                <div>오전 8시 00분</div>
+                <div>1부 영상예배</div>
+                <div>오전 7시 10분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -52,10 +52,11 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 {remaining[0] < 0 ? 0 : remaining[0]}/70명
               </CounterContainer>
             </BodyContainer>
+
             <BodyContainer>
               <TimeContainer>
-                <div>3부</div>
-                <div>오전 9시 30분</div>
+                <div>2부</div>
+                <div>오전 8시 00분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -74,11 +75,10 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 {remaining[1] < 0 ? 0 : remaining[1]}/70명
               </CounterContainer>
             </BodyContainer>
-            
             <BodyContainer>
               <TimeContainer>
-                <div>4부</div>
-                <div>오전 11시 00분</div>
+                <div>3부</div>
+                <div>오전 9시 30분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -94,14 +94,14 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                {remaining[2] < 0 ? 0 : remaining[2]}/40명
+                {remaining[2] < 0 ? 0 : remaining[2]}/70명
               </CounterContainer>
             </BodyContainer>
             
             <BodyContainer>
               <TimeContainer>
-                <div>6부</div>
-                <div>오후 4시 00분</div>
+                <div>4부</div>
+                <div>오전 11시 00분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -117,7 +117,31 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                {remaining[3] < 0 ? 0 : remaining[3]}/70명
+                <div>{remaining[3] < 0 ? 0 : remaining[3]}/40명</div>
+                <div style={{color: "#72BCEB"}}>선교회장 임명식</div>
+              </CounterContainer>
+            </BodyContainer>
+            
+            <BodyContainer>
+              <TimeContainer>
+                <div>6부 영상예배</div>
+                <div>오후 4시 00분</div>
+              </TimeContainer>
+              <AvailableContainer>
+                {!setting.openSunDay ? (
+                  <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
+                ):(
+                  <>
+                  {setting.openSunDay && remaining[4] > 0 ? (
+                    <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                  ) : (
+                    <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
+                  )}
+                  </>
+                )}
+              </AvailableContainer>
+              <CounterContainer>
+                {remaining[4] < 0 ? 0 : remaining[4]}/70명
               </CounterContainer>
             </BodyContainer>
           </div>
@@ -172,6 +196,7 @@ const CounterContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 `;
 
 export default SundayServiceButton;

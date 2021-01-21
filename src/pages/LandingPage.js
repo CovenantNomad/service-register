@@ -14,8 +14,9 @@ const LandingPage = () => {
   const [ remainingFriDay, setRemainingFriDay ] = useState(70)
   const [ remainingSunDayFirst, setRemainingSunDayFirst ] = useState(70)
   const [ remainingSunDaySecond, setRemainingSunDaySecond ] = useState(70)
-  const [ remainingSunDayThird, setRemainingSunDayThird ] = useState(40)
-  const [ remainingSunDayFourth, setRemainingSunDayFourth ] = useState(70)
+  const [ remainingSunDayThird, setRemainingSunDayThird ] = useState(70)
+  const [ remainingSunDayFourth, setRemainingSunDayFourth ] = useState(40)
+  const [ remainingSunDaySixth, setRemainingSunDaySixth ] = useState(70)
 
   useEffect(() => {
     if (setting.title === "수요예배") {
@@ -46,9 +47,23 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (setting.title === "주일예배") {
-      db.collection("주일예배").doc('2부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
+      db.collection("주일예배").doc('1부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
         const firsttempCount = doc.data().ReservationCount
         setRemainingSunDayFirst(firsttempCount)
+      }, (error) => {
+        console.log("Error @ListenDB: ", error)
+      })
+    } else {
+      console.log('주일예배 1부 리스닝 분리')
+    }
+
+  }, [remainingSunDayFirst])
+
+  useEffect(() => {
+    if (setting.title === "주일예배") {
+      db.collection("주일예배").doc('2부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
+        const secondtempCount = doc.data().ReservationCount
+        setRemainingSunDaySecond(secondtempCount)
       }, (error) => {
         console.log("Error @ListenDB: ", error)
       })
@@ -56,13 +71,13 @@ const LandingPage = () => {
       console.log('주일예배 2부 리스닝 분리')
     }
 
-  }, [remainingSunDayFirst])
-
+  }, [remainingSunDaySecond])
+  
   useEffect(() => {
     if (setting.title === "주일예배") {
-      db.collection("주일예배").doc('3부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
-        const secondtempCount = doc.data().ReservationCount
-        setRemainingSunDaySecond(secondtempCount)
+      db.collection("주일예배").doc('3부').collection(setting.reservationDate).doc('--stats--').onSnapshot((doc) => {
+        const thirdtempCount = doc.data().ReservationCount
+        setRemainingSunDayThird(thirdtempCount)
       }, (error) => {
         console.log("Error @ListenDB: ", error)
       })
@@ -70,13 +85,13 @@ const LandingPage = () => {
       console.log('주일예배 3부 리스닝 분리')
     }
 
-  }, [remainingSunDaySecond])
-  
+  }, [remainingSunDayThird])
+
   useEffect(() => {
     if (setting.title === "주일예배") {
-      db.collection("주일예배").doc('4부').collection(setting.reservationDate).doc('--stats--').onSnapshot((doc) => {
-        const thirdtempCount = doc.data().ReservationCount
-        setRemainingSunDayThird(thirdtempCount)
+      db.collection("주일예배").doc('4부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
+        const forthtempCount = doc.data().ReservationCount
+        setRemainingSunDayFourth(forthtempCount)
       }, (error) => {
         console.log("Error @ListenDB: ", error)
       })
@@ -84,13 +99,13 @@ const LandingPage = () => {
       console.log('주일예배 4부 리스닝 분리')
     }
 
-  }, [remainingSunDayThird])
+  }, [remainingSunDayFourth])
 
   useEffect(() => {
     if (setting.title === "주일예배") {
       db.collection("주일예배").doc('6부').collection(setting.reservationDate.toString()).doc('--stats--').onSnapshot((doc) => {
-        const forthtempCount = doc.data().ReservationCount
-        setRemainingSunDayFourth(forthtempCount)
+        const sixthtempCount = doc.data().ReservationCount
+        setRemainingSunDaySixth(sixthtempCount)
       }, (error) => {
         console.log("Error @ListenDB: ", error)
       })
@@ -98,7 +113,7 @@ const LandingPage = () => {
       console.log('주일예배 6부 리스닝 분리')
     }
 
-  }, [remainingSunDayFourth])
+  }, [remainingSunDaySixth])
   
 
   return (
@@ -146,7 +161,7 @@ const LandingPage = () => {
       </TempButton>
 
       <SundayServiceButton 
-        remaining={[remainingSunDayFirst, remainingSunDaySecond, remainingSunDayThird, remainingSunDayFourth]}
+        remaining={[remainingSunDayFirst, remainingSunDaySecond, remainingSunDayThird, remainingSunDayFourth, remainingSunDaySixth]}
         linkTo="/service-register/sunday"
       />
 

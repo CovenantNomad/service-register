@@ -74,12 +74,14 @@ const AdminPage = () => {
 }
 
   const onClickSunDay = () => {
+    const firstRef = db.collection('주일예배').doc('1부').collection(sundayString).doc('--stats--')
+    batch.set(firstRef, { ReservationCount: 70 })
     const secondRef = db.collection('주일예배').doc('2부').collection(sundayString).doc('--stats--')
     batch.set(secondRef, { ReservationCount: 70 })
     const thirdRef = db.collection('주일예배').doc('3부').collection(sundayString).doc('--stats--')
     batch.set(thirdRef, { ReservationCount: 70 })
     const forthRef = db.collection('주일예배').doc('4부').collection(sundayString).doc('--stats--')
-    batch.set(forthRef, { ReservationCount: 70 })
+    batch.set(forthRef, { ReservationCount: 40 })
     const sixthRef = db.collection('주일예배').doc('6부').collection(sundayString).doc('--stats--')
     batch.set(sixthRef, { ReservationCount: 70 })
     const settingRef = db.collection('디비세팅').doc('최신일자')
@@ -97,15 +99,100 @@ const AdminPage = () => {
       alert('업데이트 실패했습니다')
     });
   }
-
-  const onClickLookUp = () => {
+  const onClickLookUpWed = () => {
     db.collection('수요예배').doc('1부').collection('20210120').onSnapshot((snapshot) => {
       const tempArray = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
       }))
       const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      setUserlist(cleanUpList)
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
+    })
+  }
+  const onClickLookUpFri = () => {
+    db.collection('금요성령집회').doc('1부').collection('20210122').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
+    })
+  }
+
+  const onClickLookUpOne = () => {
+    db.collection('주일예배').doc('1부').collection('20210124').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
+    })
+  }
+
+  const onClickLookUpTwo = () => {
+    db.collection('주일예배').doc('2부').collection('20210124').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
+    })
+  }
+
+  const onClickLookUpThree = () => {
+    db.collection('주일예배').doc('3부').collection('20210124').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
+    })
+  }
+
+  const onClickLookUpFour = () => {
+    db.collection('주일예배').doc('4부').collection('20210124').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
+    })
+  }
+
+  const onClickLookUpSix = () => {
+    db.collection('주일예배').doc('6부').collection('20210124').onSnapshot((snapshot) => {
+      const tempArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
+      const sortedList = cleanUpList.sort((x, y) => {
+        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+      })
+      setUserlist(sortedList)
     })
   }
 
@@ -140,7 +227,18 @@ const AdminPage = () => {
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>타이머 세팅하기</div>
 
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>
-      <LookupButton onClick={onClickLookUp}>조회</LookupButton>
+      
+      <LookupContainer>
+        <LookupButton onClick={onClickLookUpWed}>수요예배</LookupButton>
+        <LookupButton onClick={onClickLookUpFri}>금요예배</LookupButton>
+        <LookupButton onClick={onClickLookUpOne}>1부조회</LookupButton>
+        <LookupButton onClick={onClickLookUpTwo}>2부조회</LookupButton>
+        <LookupButton onClick={onClickLookUpThree}>3부조회</LookupButton>
+        <LookupButton onClick={onClickLookUpFour}>4부조회</LookupButton>
+        <LookupButton onClick={onClickLookUpSix}>6부조회</LookupButton>
+      </LookupContainer>
+      
+      
 
       <TableContainer component={Paper}>
         <Table aria-label="simple table" style={{minWidth: 250}}>
@@ -198,10 +296,15 @@ const Title = styled.div`
 
 `;
 
+const LookupContainer = styled.div`
+  margin-bottom: 1rem;
+  display: flex;
+`;
+
 const LookupButton = styled.button`
   border: 2px solid #228be6;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin: 0 1rem
 `;
 
 
