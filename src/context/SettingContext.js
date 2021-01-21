@@ -10,6 +10,7 @@ const SettingProvider = (props) => {
     openWednesDay: false,
     openFriDay: false,
     openSunDay: false,
+    isSubmitting: false,
   })
 
   return <SettingContext.Provider value={[state, setState]}>{props.children}</SettingContext.Provider>

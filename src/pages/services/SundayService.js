@@ -22,8 +22,10 @@ const SundayService = () => {
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   const onSubmit = async data => {
-    if (!formState.isSubmitting){
-      await sleep(500);
+    if (!setting.isSubmitting){
+      setting.isSubmitting = true;
+      console.log(`isSubmitting!!`);
+      await sleep(1000);
 
       const submitData = {
         ...data,
@@ -35,33 +37,35 @@ const SundayService = () => {
       return db.runTransaction((transaction) => {
         return transaction.get(statsRef).then((statsDoc) => {
           if (statsDoc.data().ReservationCount > 0){
+            // fixme : 여기에 중복된 신청인지 확인하는 로직이 필요합니다. 현재는 동명이인이 있을 수 있어서 (이름, 직분, 소속) 만으로는 중복 신청이라고 판정하기 애매합니다. 성도를 유일하게 구분하는 key (ex. 전화번호) 가 필요합니다.
             batch.set(newuserRef, submitData);
             batch.set(statsRef, { ReservationCount: decrement }, {merge: true})
             batch.commit()
           } else {
             console.log('예약실패')
             history.push({
-              pathname: "/service-register/result", 
+              pathname: "/service-register/result",
               state: {
-                result: false, 
+                result: false,
                 detail: submitData
               }
             })
             return Promise.reject('실패')
-            
           }
         })
       }).then(() => {
         console.log('예약성공')
         history.push({
-          pathname: "/service-register/result", 
+          pathname: "/service-register/result",
           state: {
-            result: true, 
+            result: true,
             detail: submitData
           }
         })
       }).catch((error) => {
         console.log(error)
+      }).finally(() => {
+        setting.isSubmitting = false;
       })
     } else {
       console.log('제출 중입니다.')
@@ -131,7 +135,7 @@ const SundayService = () => {
           {errors.serviceTime && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>예배시간을 선택해주세요</div>}
         </InputContainer>
         <InputContainer>
-          <SubmitButton type="submit" disabled={formState.isSubmitting}>예배신청하기</SubmitButton>
+          <SubmitButton type="submit" disabled={setting.isSubmitting}>예배신청하기</SubmitButton>
         </InputContainer>
       </InserForm>
     </Container>
