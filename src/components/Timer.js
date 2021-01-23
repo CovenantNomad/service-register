@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled from 'styled-components'
 import { SettingContext } from '../context/SettingContext'
 
-const Timer = () => {
+const Timer = ({ title, date }) => {
   const [ timerDays, setTimerDays ] = useState('00')
   const [ timerHours, setTimerHours ] = useState('00')
   const [ timerMinutes, setTimerMinutes ] = useState('00')
@@ -13,7 +13,7 @@ const Timer = () => {
   let interval = useRef()
 
   const startTimer = () => {
-    const countdownDate = new Date('Jan 26, 2021 19:00:00').getTime();
+    const countdownDate = date.getTime()
 
     interval = setInterval(() => {
       const now = new Date().getTime();
@@ -28,17 +28,17 @@ const Timer = () => {
         // stop our timer
         clearInterval(interval)
         setStop(true)
-        if (setting.title === "수요예배") {
+        if (title === "수요예배") {
           setSetting({
             ...setting,
             openWednesDay: true
           })
-        } else if (setting.title === "금요성령집회") {
+        } else if (title === "금요성령집회") {
           setSetting({
             ...setting,
             openFriDay: true
           })
-        } else if (setting.title === "주일예배") {
+        } else if (title === "주일예배") {
           setSetting({
             ...setting,
             openSunDay: true
@@ -54,12 +54,33 @@ const Timer = () => {
   }
 
   useEffect(() => {
-    startTimer()
-  }, [stop])
+    if (title === "수요예배") {
+      if (!setting.forcingCloseWed) {
+        startTimer()
+      }
+      else {
+        return
+      }
+    } else if (title === "금요성령집회") {
+      if (!setting.forcingCloseFri) {
+        startTimer()
+      }
+      else {
+        return
+      }
+    } else if (title === "주일예배") {
+      if (!setting.forcingCloseSun) {
+        startTimer()
+      }
+      else {
+        return
+      }
+    }
+  }, [])
 
   return (
     <BackgroundContainer>
-      <Title>{setting.title} 신청까지</Title>
+      <Title>{title} 신청까지</Title>
       <TimerContainer>  
         <SectionContainer>
           <Time>{timerDays}</Time>

@@ -9,14 +9,25 @@ const LoadingPage = () => {
   const history = useHistory();
 
   const initialize = async () => {
-    const settingRef = db.collection('디비세팅').doc('최신일자')
+    const settingRef = db.collection('setting').doc('latest')
     await settingRef.get().then((doc) => {
       if (doc.exists) {
         setSetting({
           ...setting,
           init: true,
-          title: doc.data().title,
-          reservationDate: doc.data().reservationDate
+          isWeekday: doc.data().isWeekday,
+          wednesday: doc.data().wednesday,
+          friday: doc.data().friday,
+          sunday: "",
+          TimerWednesDay: doc.data().TimerWednesDay,
+          TimerFriDay: doc.data().TimerFriDay,
+          TimerSunDay: "",
+          openWednesDay: doc.data().openWednesDay,
+          openFriDay: doc.data().openFriDay,
+          openSunDay: false,
+          forcingCloseWed: doc.data().forcingCloseWed,
+          forcingCloseFri: doc.data().forcingCloseFri,
+          forcingCloseSun: false,
         })
         console.log("세팅업데이트 성공");
       } else {
@@ -45,7 +56,6 @@ const LoadingPage = () => {
       <div>화양교회 예배신청 페이지입니다</div>
       <div>잠시만 기다려 주세요</div>
     </Container>
-    
   )
 }
 

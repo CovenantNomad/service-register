@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components'
 import { db } from '../config/firebaseConfig'
 
@@ -19,6 +19,42 @@ function fillZero(width, str){
 
 const AdminPage = () => {
   const [ userlist, setUserlist ] = useState(false)
+  const [ latestSetting, setLatestSetting ] = useState(null)
+  const [ forcingCloseWed, setForcingCloseWed ] = useState(false)
+  const [ forcingCloseFri, setForcingCloseFri ] = useState(false)
+  const [ forcingCloseSun, setForcingCloseSun ] = useState(false)
+  const [ seats, setSeats ] = useState({
+    wednesDay: 70,
+    friday: 70,
+    sundayOne: 70,
+    sundayTwo: 70,
+    sundayThree: 70,
+    sundayFour: 70,
+    sundaySix: 70,
+  })
+
+  const loadSettings = () => {
+    db.collection('setting').doc('latest').get().then((doc) => {
+      if (doc.exists) {
+        console.log("Setting data:", doc.data());
+        setLatestSetting(doc.data())
+      } else {
+        console.log("No such document!");
+      }
+    }).catch((error) => {
+      console.log("Error @loadSettings: ", error)
+    })
+  }
+
+  useEffect(() => {
+    console.log('세팅값 불러오는 중')
+    if (latestSetting == null) {
+      loadSettings()
+    }
+  }, [])
+
+
+
   const batch = db.batch();
   
   let wednesday = new Date();
@@ -35,13 +71,26 @@ const AdminPage = () => {
 
   
 
-  const onClickWednesDay = () => {
+  const onClickWeekday = () => {
       const wedRef = db.collection('수요예배').doc('1부').collection(wednesdayString).doc('--stats--')
+      const friRef = db.collection('금요성령집회').doc('1부').collection(fridayString).doc('--stats--')
       batch.set(wedRef, { ReservationCount: 70 })
-      const settingRef = db.collection('디비세팅').doc('최신일자')
+      batch.set(friRef, { ReservationCount: 70 })
+      const settingRef = db.collection('setting').doc('latest')
       batch.update(settingRef, {
-        title: "수요예배",
-        reservationDate: wednesdayString.toString()
+        isWeekday: true,
+        wednesday: wednesday,
+        friday: friday,
+        sunday: "",
+        TimerWednesDay: new Date(wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19),
+        TimerFriDay: new Date(friday.getFullYear(), friday.getMonth(), friday.getDate()-3, 20),
+        TimerSunDay: "",
+        openWednesDay: true,
+        openFriDay: true,
+        openSunDay: false,
+        forcingCloseWed: forcingCloseWed,
+        forcingCloseFri: forcingCloseFri,
+        forcingCloseSun: false,
       })
       batch.commit()
       .then(() => {
@@ -54,35 +103,17 @@ const AdminPage = () => {
       });
   }
 
-  const onClickFriDay = () => {
-    const friRef = db.collection('금요성령집회').doc('1부').collection(fridayString).doc('--stats--')
-    batch.set(friRef, { ReservationCount: 70 })
-    const settingRef = db.collection('디비세팅').doc('최신일자')
-    batch.update(settingRef, {
-      title: "금요성령집회",
-      reservationDate: fridayString.toString()
-    })
-    batch.commit()
-    .then(() => {
-      console.log("Document successfully written!");
-      alert('업데이트 성공했습니다')
-    })
-    .catch((error) => {
-      console.error("Error writing document: ", error);
-      alert('업데이트 실패했습니다')
-    });
-}
 
   const onClickSunDay = () => {
     const firstRef = db.collection('주일예배').doc('1부').collection(sundayString).doc('--stats--')
-    batch.set(firstRef, { ReservationCount: 70 })
     const secondRef = db.collection('주일예배').doc('2부').collection(sundayString).doc('--stats--')
-    batch.set(secondRef, { ReservationCount: 70 })
     const thirdRef = db.collection('주일예배').doc('3부').collection(sundayString).doc('--stats--')
-    batch.set(thirdRef, { ReservationCount: 70 })
     const forthRef = db.collection('주일예배').doc('4부').collection(sundayString).doc('--stats--')
-    batch.set(forthRef, { ReservationCount: 40 })
     const sixthRef = db.collection('주일예배').doc('6부').collection(sundayString).doc('--stats--')
+    batch.set(firstRef, { ReservationCount: 70 })
+    batch.set(secondRef, { ReservationCount: 70 })
+    batch.set(thirdRef, { ReservationCount: 70 })
+    batch.set(forthRef, { ReservationCount: 40 })
     batch.set(sixthRef, { ReservationCount: 70 })
     const settingRef = db.collection('디비세팅').doc('최신일자')
     batch.update(settingRef, {
@@ -99,8 +130,8 @@ const AdminPage = () => {
       alert('업데이트 실패했습니다')
     });
   }
-  const onClickLookUpWed = () => {
-    db.collection('수요예배').doc('1부').collection('20210120').onSnapshot((snapshot) => {
+  const onClickLookUp = ({title, time, date}) => {
+    db.collection(title).doc(time).collection(date).onSnapshot((snapshot) => {
       const tempArray = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
@@ -205,26 +236,77 @@ const AdminPage = () => {
     return formattedTime
   }
 
+  const onForingCloseClick = (days) => {
+    if (days === "수요일") {
+      setForcingCloseWed(true)
+    } else if (days === "금요일") {
+      setForcingCloseFri(true)
+    } else if (days === "주일") {
+      setForcingCloseSun(true)
+    }
+  }
+
+  const onSeatsChange = (e) => {
+    const { value, name } = e.target
+    setSeats({
+      ...seats,
+      [name]: value
+    })
+  }
+
+
+
   return (
     <Container>
       <NavBarForAdmin />
-      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>신청 전 예배DB 리셋하기</div>
+
+      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>현재 세팅 상태</div>
+        <div>{latestSetting==null ? "" : latestSetting.isWeekday ? "현재 주중예배(수/금)가 세팅되어 있습니다." : "주일예배가 세팅되어 있습니다."}</div>
+        
+      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>다음 신청 세팅하기</div>
       <SettingContainer>
+        <div>주중예배세팅</div>
         <Setting>
-          <Title>수요예배 DB세팅</Title>
-          <Button onClick={() => onClickWednesDay()}>{wednesday.getFullYear()}년 {wednesday.getMonth()+1}월 {wednesday.getDate()}일</Button>
+          <div>수요예배</div>
+          <Title>날짜 : {wednesday.getFullYear()}년 {wednesday.getMonth()+1}월 {wednesday.getDate()}일</Title>
+          <Title>타이머시간 : {forcingCloseWed ? '강제종료' : `${wednesday.getFullYear()}년 ${wednesday.getMonth()+1}월 ${wednesday.getDate()-1}일 19시`}</Title>
+          <Title>좌석수 : {seats.wednesDay}</Title>
         </Setting>
         <Setting>
-          <Title>금요성령집회 DB세팅</Title>
-          <Button onClick={() => onClickFriDay()}>{friday.getFullYear()}년 {friday.getMonth()+1}월 {friday.getDate()}일</Button>
+          <div>금요예배</div>
+          <Title>날짜 : {friday.getFullYear()}년 {friday.getMonth()+1}월 {friday.getDate()}일</Title>
+          <Title>타이머시간 : {forcingCloseFri ? '강제종료' : `${friday.getFullYear()}년 ${friday.getMonth()+1}월 ${friday.getDate()-3}일 20시`}</Title>
+          <Title>좌석수 : {seats.friday}</Title>
         </Setting>
+        <div style={{borderTop: '1px solid black', marginBottom: 10}}/>
+        <div>
+          <div style={{display: 'flex', flexDirection: 'row', marginBottom: 10, alignItems: 'center'}}>
+            <div style={{marginRight: 10}}>수요예배 좌석조정</div>
+            <input name="wednesday" value={seats.wednesDay} onChange={onSeatsChange}/>
+            <div style={{marginLeft: 10, marginRight: 10}}>금요예배 좌석조정</div>
+            <input name="friday" value={seats.friday} onChange={onSeatsChange}/>
+          </div>
+          <div style={{display:'flex', marginBottom: 10}}>
+            <button onClick={() => onForingCloseClick('수요일')} style={{marginRight: 20}}>수요예배 강제닫기</button>
+            <button onClick={() => onForingCloseClick('금요일')}>금요예배 강제닫기</button>
+          </div>
+
+          <button 
+            style={{backgroundColor: 'red', border: '2px solid black', padding: 10, font: 20, fontWeight: 600}}
+            onClick={() => onClickWeekday()}
+          >
+            세팅 업데이트
+          </button>
+        </div>
+      </SettingContainer>
+      <div style={{borderTop: '2px solid black', marginBottom: 10}}/>
+      <SettingContainer>
+        <div>주일예배</div>
         <Setting>
           <Title>주일예배 DB세팅</Title>
           <Button onClick={() => onClickSunDay()}>{sunday.getFullYear()}년 {sunday.getMonth()+1}월 {sunday.getDate()}일</Button>
         </Setting>
       </SettingContainer>
-
-      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>타이머 세팅하기</div>
 
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>
       
@@ -280,20 +362,20 @@ const Container = styled.div`
   align-items: center; */
 `;
 
-const SettingContainer = styled.div``;
+const SettingContainer = styled.div`
+  margin-bottom: 20px;
+`;
 
 const Setting = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 10px 0;
 `;
 
 const Title = styled.div`
   display: flex;
   align-items: center;
-  padding: 1rem;
-  width: 150px;
-
+  padding-left: 1rem;
 `;
 
 const LookupContainer = styled.div`

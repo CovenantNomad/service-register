@@ -124,13 +124,14 @@ const LandingPage = () => {
         <div>(요 4:23)</div>
       </SubHeader>
 
-      <Timer />
+      <Timer title="수요예배" date={new Date(2021, 0, 26, 19)}/>
 
       <WeekdayServiceButton 
         days="수요일"
         title="수요예배" 
         time="7시30분"
         open={setting.openWednesDay}
+        forcingClose={true}
         remaining={remainingWednesDay} 
         linkTo="/service-register/wednesday"
       />
