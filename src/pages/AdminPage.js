@@ -130,100 +130,14 @@ const AdminPage = () => {
       alert('업데이트 실패했습니다')
     });
   }
-  const onClickLookUp = ({title, time, date}) => {
-    db.collection(title).doc(time).collection(date).onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-  const onClickLookUpFri = () => {
-    db.collection('금요성령집회').doc('1부').collection('20210122').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
 
-  const onClickLookUpOne = () => {
-    db.collection('주일예배').doc('1부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
+  const onClickLookUp = (title, time, date) => {
+    db.collection(title).doc(time).collection(date).orderBy("submitTime").get().then((querySnapshot) => {
+      const tempArray = querySnapshot.forEach((doc) => ({
         id: doc.id,
         ...doc.data()
       }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpTwo = () => {
-    db.collection('주일예배').doc('2부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpThree = () => {
-    db.collection('주일예배').doc('3부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpFour = () => {
-    db.collection('주일예배').doc('4부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpSix = () => {
-    db.collection('주일예배').doc('6부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
+      setUserlist(tempArray)
     })
   }
 
@@ -311,13 +225,13 @@ const AdminPage = () => {
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>
       
       <LookupContainer>
-        <LookupButton onClick={onClickLookUpWed}>수요예배</LookupButton>
-        <LookupButton onClick={onClickLookUpFri}>금요예배</LookupButton>
-        <LookupButton onClick={onClickLookUpOne}>1부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpTwo}>2부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpThree}>3부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpFour}>4부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpSix}>6부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('수요예배', '1부', wednesdayString)}>수요예배</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('금요성령집회', '1부', fridayString)}>금요예배</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '1부', sundayString)}>1부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '2부', sundayString)}>2부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '3부', sundayString)}>3부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '4부', sundayString)}>4부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '6부', sundayString)}>6부조회</LookupButton>
       </LookupContainer>
       
       
