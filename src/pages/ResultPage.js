@@ -21,7 +21,7 @@ const ResultPage = () => {
     window.location.href="kakaotalk://inappbrowser/close"
   }
 
-  const sendingData = async (userName) => {
+  const sendingData = async () => {
     const submitData = {
       name: registerData.name,
       position: registerData.position,
@@ -30,12 +30,12 @@ const ResultPage = () => {
       index: 0
     }
 
-    const statsRef = db.collection(registerData.title).doc(registerData.time).collection(registerData.date).doc('--stats--');
-    const newuserRef = db.collection(registerData.title).doc(registerData.time).collection(registerData.date).doc();
-    const userListRef = db.collection(registerData.title).doc(registerData.time).collection(registerData.date)
+    const statsRef = db.collection(registerData.title).doc(registerData.serviceTime).collection(registerData.reservationDate).doc('--stats--');
+    const newuserRef = db.collection(registerData.title).doc(registerData.serviceTime).collection(registerData.reservationDate).doc();
+    const userListRef = db.collection(registerData.title).doc(registerData.serviceTime).collection(registerData.reservationDate)
     const decrement = Firebase.firestore.FieldValue.increment(-1)
 
-    let query = userListRef.where("name", "==", userName).where("position", "==", registerData.position);
+    let query = userListRef.where("name", "==", registerData.name).where("position", "==", registerData.position);
     query.get().then(querySnapshot => {
       if (querySnapshot.empty) {
         console.log('등록진행 계속')
@@ -46,7 +46,7 @@ const ResultPage = () => {
             } 
             if (statsDoc.data().ReservationCount > 0) {
               const remainingCount = statsDoc.data().ReservationCount
-              transaction.update(statsRef, { ReservationCount: decrement })
+              transaction.update(statsRef, { ReservationCount: decrement }, { merge: true })
               transaction.set(newuserRef, {
                 ...submitData,
                 index: Math.abs(remainingCount - 70) + 1,
@@ -64,9 +64,10 @@ const ResultPage = () => {
     })
   }
 
-  const checkResult = (userName) => {
-    const userListRef = db.collection(registerData.title).doc(registerData.time).collection(registerData.date)
-    let query = userListRef.where("name", "==", userName).where("position", "==", registerData.position);
+  const checkResult = () => {
+    const userListRef = db.collection(registerData.title).doc(registerData.serviceTime).collection(registerData.reservationDate)
+    let indexQuery = userListRef.where("index", "==", 70)
+    let query = userListRef.where("name", "==", registerData.name).where("position", "==", registerData.position);
     query.get().then(querySnapshot => {
       if (querySnapshot.empty) {
         console.log('DB에 없음')
@@ -76,37 +77,46 @@ const ResultPage = () => {
           if (doc.data().index < 70) {
             console.log('선착순 당첨')
             setResult(true)
+          } else if (doc.data().index === 70) {
+            indexQuery.get().then((querySnapshot) => {
+              let tempArray = []
+              querySnapshot.forEach((doc, idx) => {
+                tempArray.push({
+                 id: doc.id,
+                 order: idx,
+                 ...doc.data()
+                })
+             })
+             tempArray.sort((a, b) => {
+               return a.submitTime - b.submitTime
+             })
+             if (tempArray[0].name === registerData.name) {
+              console.log('선착순 당첨')
+              setResult(true)
+             } else {
+              console.log('제출시간에서 밀림')
+              setResult(false)
+             }
+            })
           } else {
-            console.log('시간에서 밀림')
+            console.log('70명 이후 신청자')
             setResult(false)
           }
         })
       }
     })
-
   }
 
   useEffect(async () => {
     console.log('전송중...')
     if (setting.isSubmitting) {
-      await sendingData(registerData.name)
+      await sendingData()
       await setSetting({
         ...setting,
         isSubmitting: false
       })
     }
-  }, [registerData.name])
-
-  useEffect(async () => {
-    if (!setting.isSubmitting && !setting.isSubmitted) {
-      console.log('결과체크...')
-      await checkResult(registerData.name)
-      await setSetting({
-        ...setting,
-        isSubmitted: true
-      })
-    }
-  }, [setting.isSubmitting])
+  }, [])
   
 
   return (
@@ -121,30 +131,44 @@ const ResultPage = () => {
         ) : (
           <>
           {result == null ? (
-            <div>...처리중...</div>
+            <CheckContainer>
+              <CheckButton onClick={() => checkResult()}>결과확인</CheckButton>
+              <div style={{fontSize: '1.5rem', marginBottom: '0.25rem', textAlign:'center'}}>결과 확인 버튼을</div>
+              <div style={{fontSize: '1.5rem', marginBottom: '0.25rem', textAlign:'center'}}>눌러주세요!</div>
+            </CheckContainer>
           ) : (
             <>
             {result ? (
-            <>
-              <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{registerData.name} {registerData.position}님 </div>
-              <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'blue'}}>{registerData.title} 신청에 성공하셨습니다.</div>
-              <div>많은 은혜 받으시길 바랍니다</div>
-            </>
-          ) : (
-            <>
-              <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{registerData.name} {registerData.position}님 </div>
-              <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>죄송합니다.</div>
-              <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'red'}}>{registerData.title} 신청이 마감되었습니다.</div>
-            </>
-          )}
+              <>
+                <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{registerData.name} {registerData.position}님 </div>
+                <div style={{fontSize: '1.5rem', marginBottom: '0.5rem', color: 'blue'}}>{registerData.title} 신청에 성공하셨습니다.</div>
+                <div style={{fontSize: '1.25rem', marginBottom: '2rem'}}>많은 은혜 받으시길 바랍니다</div>
+
+                <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>
+                <div 
+                  style={{width: '90%', display:'flex', flexWrap:'wrap', textAlign:'center', justifyContent: 'center', marginBottom: '0.5rem'}}
+                >
+                  뒤로 가기 버튼만 누르지 마시고 창을 닫아 주세요 *^^*
+                </div>
+                <div 
+                  style={{width: '90%', display:'flex', flexWrap:'wrap', textAlign:'center', justifyContent: 'center'}}
+                >
+                  담당교역자가 개인별로 오늘 10시안에 확인 메시지 보내 드리겠습니다
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{registerData.name} {registerData.position}님 </div>
+                <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>죄송합니다.</div>
+                <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'red'}}>{registerData.title} 신청이 마감되었습니다.</div>
+              </>
+            )}
             </>
           )}
           </>
         )}
  
-        <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>
-        <div>뒤로 가기 버튼만 누르지 마시고 창을 닫아 주세요 *^^*</div>
-        <div>담당교역자가 개인별로 오늘 10시안에 확인 메시지 보내 드리겠습니다</div>
+
 
       </ResultContainer>
     </Container>
@@ -164,6 +188,22 @@ const ResultContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+const CheckContainer = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const CheckButton = styled.div`
+  margin-bottom: 1rem; 
+  background-color: #228be6;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 2rem;
+  border-radius: 16px;
 `;
 
 const CloseButton = styled.div`

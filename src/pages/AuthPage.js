@@ -11,14 +11,16 @@ import NavBarForAdmin from '../components/NavBarForAdmin'
 
 const AuthPage = () => {
   const { register, handleSubmit, errors } = useForm()
-  const [ isLoggedIn, setIsLoggedIn ] = useContext(UserContext)
+  const [ userInfo, setUserInfo ] = useContext(UserContext)
   const history = useHistory();
 
   const onSubmit = async (data) => {
     try {
       await auth.signInWithEmailAndPassword(data.email, data.password)
       console.log("LOGIN SUCCESS")
-      setIsLoggedIn(true)
+      setUserInfo({
+        isLoggedIn: true
+      })
       history.push({
         pathname: "/service-register/admin", 
       })
