@@ -131,13 +131,13 @@ const LandingPage = () => {
       {setting.isWeekday ? (
         <>
           {/* <div>현재 신청예정 예배는 {setting.forcingCloseWed ? "" : '수요예배,'} {setting.forcingCloseFri ? "" : '금요성령집회'}입니다.</div> */}
-          {/* <Timer 
+          <Timer 
             title="수요예배" 
             date={new Date(setting.TimerWednesDay[0], setting.TimerWednesDay[1], setting.TimerWednesDay[2], setting.TimerWednesDay[3], setting.TimerFriDay[4])} 
             settingFunction={setOpenWednesDay}
             forcingClose={setting.forcingCloseWed}
-          /> */}
-          <Timer title="수요예배" date={new Date(2021, 0, 26, 0, 59)} settingFunction={setOpenWednesDay} forcingClose={setting.forcingCloseWed}/>
+          />
+          {/* <Timer title="수요예배" date={new Date(2021, 0, 26, 0, 59)} settingFunction={setOpenWednesDay} forcingClose={setting.forcingCloseWed}/> */}
           <WeekdayServiceButton 
             days="수요일"
             title="수요예배" 
