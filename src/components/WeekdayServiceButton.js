@@ -54,7 +54,7 @@ const WeekdayServiceButton = ({ days, title, time, open, forcingClose, remaining
                 ):(
                   <>
                   {open && remaining > 0 ? (
-                    <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>테스트중</div>
+                    <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                   )}
