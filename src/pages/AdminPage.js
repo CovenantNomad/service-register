@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components'
 import { db } from '../config/firebaseConfig'
 
@@ -19,6 +19,51 @@ function fillZero(width, str){
 
 const AdminPage = () => {
   const [ userlist, setUserlist ] = useState(false)
+  const [ latestSetting, setLatestSetting ] = useState(null)
+  const [ forcingCloseWed, setForcingCloseWed ] = useState(false)
+  const [ forcingCloseFri, setForcingCloseFri ] = useState(false)
+  const [ forcingCloseSun, setForcingCloseSun ] = useState(false)
+  const [ seats, setSeats ] = useState({
+    wednesday: 70,
+    friday: 70,
+    sundayOne: 70,
+    sundayTwo: 70,
+    sundayThree: 70,
+    sundayFour: 70,
+    sundaySix: 70,
+  })
+  const [ comments, setComments ] = useState({
+    commentWed: "",
+    commentFri: "",
+    commentSunOne: "",
+    commentSunTwo: "",
+    commentSunThree: "",
+    commentSunFour: "",
+    commentSunSix: "",
+  })
+
+  const loadSettings = () => {
+    db.collection('setting').doc('latest').get().then((doc) => {
+      if (doc.exists) {
+        console.log("Setting data:", doc.data());
+        setLatestSetting(doc.data())
+      } else {
+        console.log("No such document!");
+      }
+    }).catch((error) => {
+      console.log("Error @loadSettings: ", error)
+    })
+  }
+
+  useEffect(() => {
+    console.log('세팅값 불러오는 중')
+    if (latestSetting === null) {
+      loadSettings()
+    }
+  }, [latestSetting])
+
+
+
   const batch = db.batch();
   
   let wednesday = new Date();
@@ -35,13 +80,37 @@ const AdminPage = () => {
 
   
 
-  const onClickWednesDay = () => {
+  const onClickWeekday = () => {
       const wedRef = db.collection('수요예배').doc('1부').collection(wednesdayString).doc('--stats--')
-      batch.set(wedRef, { ReservationCount: 70 })
-      const settingRef = db.collection('디비세팅').doc('최신일자')
+      const friRef = db.collection('금요성령집회').doc('1부').collection(fridayString).doc('--stats--')
+      const settingRef = db.collection('setting').doc('latest')
+      batch.set(wedRef, { ReservationCount: seats.wednesday })
+      batch.set(friRef, { ReservationCount: seats.friday })
       batch.update(settingRef, {
-        title: "수요예배",
-        reservationDate: wednesdayString.toString()
+        isWeekday: true,
+        wednesday: wednesdayString,
+        friday: fridayString,
+        sunday: "",
+        TimerWednesDay: [wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-2, 22],
+        TimerFriDay: [friday.getFullYear(), friday.getMonth(), friday.getDate()-4, 22],
+        TimerSunDay: "",
+        forcingCloseWed: forcingCloseWed,
+        forcingCloseFri: forcingCloseFri,
+        forcingCloseSun: false,
+        wednesDaySeats: seats.wednesday,
+        fridaySeats: seats.friday,
+        sundayOneSeats: "",
+        sundayTwoSeats: "",
+        sundayThreeSeats: "",
+        sundayFourSeats: "",
+        sundaySixSeats: "",
+        commentWed: comments.commentWed,
+        commentFri: comments.commentFri,
+        commentSunOne: "",
+        commentSunTwo: "",
+        commentSunThree: "",
+        commentSunFour: "",
+        commentSunSix: "",
       })
       batch.commit()
       .then(() => {
@@ -54,40 +123,44 @@ const AdminPage = () => {
       });
   }
 
-  const onClickFriDay = () => {
-    const friRef = db.collection('금요성령집회').doc('1부').collection(fridayString).doc('--stats--')
-    batch.set(friRef, { ReservationCount: 70 })
-    const settingRef = db.collection('디비세팅').doc('최신일자')
-    batch.update(settingRef, {
-      title: "금요성령집회",
-      reservationDate: fridayString.toString()
-    })
-    batch.commit()
-    .then(() => {
-      console.log("Document successfully written!");
-      alert('업데이트 성공했습니다')
-    })
-    .catch((error) => {
-      console.error("Error writing document: ", error);
-      alert('업데이트 실패했습니다')
-    });
-}
 
   const onClickSunDay = () => {
     const firstRef = db.collection('주일예배').doc('1부').collection(sundayString).doc('--stats--')
-    batch.set(firstRef, { ReservationCount: 70 })
     const secondRef = db.collection('주일예배').doc('2부').collection(sundayString).doc('--stats--')
-    batch.set(secondRef, { ReservationCount: 70 })
     const thirdRef = db.collection('주일예배').doc('3부').collection(sundayString).doc('--stats--')
-    batch.set(thirdRef, { ReservationCount: 70 })
     const forthRef = db.collection('주일예배').doc('4부').collection(sundayString).doc('--stats--')
-    batch.set(forthRef, { ReservationCount: 40 })
     const sixthRef = db.collection('주일예배').doc('6부').collection(sundayString).doc('--stats--')
-    batch.set(sixthRef, { ReservationCount: 70 })
-    const settingRef = db.collection('디비세팅').doc('최신일자')
+    const settingRef = db.collection('setting').doc('latest')
+    batch.set(firstRef, { ReservationCount: seats.sundayOne })
+    batch.set(secondRef, { ReservationCount: seats.sundayTwo })
+    batch.set(thirdRef, { ReservationCount: seats.sundayThree })
+    batch.set(forthRef, { ReservationCount: seats.sundayFour })
+    batch.set(sixthRef, { ReservationCount: seats.sundaySix })
     batch.update(settingRef, {
-      title: "주일예배",
-      reservationDate: sundayString.toString()
+      isWeekday: false,
+      wednesday: "",
+      friday: "",
+      sunday: sundayString,
+      TimerWednesDay: "new Date(wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19)",
+      TimerFriDay: "",
+      TimerSunDay: [sunday.getFullYear(), sunday.getMonth(), sunday.getDate()-3, 19],
+      forcingCloseWed: false,
+      forcingCloseFri: false,
+      forcingCloseSun: forcingCloseSun,
+      wednesDaySeats: "",
+      fridaySeats: "",
+      sundayOneSeats: seats.sundayOne,
+      sundayTwoSeats: seats.sundayTwo,
+      sundayThreeSeats: seats.sundayThree,
+      sundayFourSeats: seats.sundayFour,
+      sundaySixSeats: seats.sundaySix,
+      commentWed: "",
+      commentFri: "",
+      commentSunOne: comments.commentSunOne,
+      commentSunTwo: comments.commentSunTwo,
+      commentSunThree: comments.commentSunThree,
+      commentSunFour: comments.commentSunFour,
+      commentSunSix: comments.commentSunSix,
     })
     batch.commit()
     .then(() => {
@@ -99,100 +172,19 @@ const AdminPage = () => {
       alert('업데이트 실패했습니다')
     });
   }
-  const onClickLookUpWed = () => {
-    db.collection('수요예배').doc('1부').collection('20210120').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-  const onClickLookUpFri = () => {
-    db.collection('금요성령집회').doc('1부').collection('20210122').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
 
-  const onClickLookUpOne = () => {
-    db.collection('주일예배').doc('1부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
+  const onClickLookUp = (title, time, date) => {
+    db.collection(title).doc(time).collection(date).orderBy("submitTime").get().then((querySnapshot) => {
+      let tempArray = []
+       querySnapshot.forEach((doc) => {
+         tempArray.push({
+          id: doc.id,
+          ...doc.data()
+         })
       })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpTwo = () => {
-    db.collection('주일예배').doc('2부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpThree = () => {
-    db.collection('주일예배').doc('3부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpFour = () => {
-    db.collection('주일예배').doc('4부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
-    })
-  }
-
-  const onClickLookUpSix = () => {
-    db.collection('주일예배').doc('6부').collection('20210124').onSnapshot((snapshot) => {
-      const tempArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      const cleanUpList = tempArray.filter(item => item.id !== "--stats--")
-      const sortedList = cleanUpList.sort((x, y) => {
-        return x.submitTime.nanoseconds - y.submitTime.nanoseconds
-      })
-      setUserlist(sortedList)
+      setUserlist(tempArray)
+    }).catch(error => {
+      console.log(error)
     })
   }
 
@@ -205,39 +197,110 @@ const AdminPage = () => {
     return formattedTime
   }
 
+  const onForingCloseClick = (days) => {
+    if (days === "수요일") {
+      setForcingCloseWed(!forcingCloseWed)
+    } else if (days === "금요일") {
+      setForcingCloseFri(!forcingCloseFri)
+    } else if (days === "주일") {
+      setForcingCloseSun(!forcingCloseSun)
+    }
+  }
+
+  const onSeatsChange = (e) => {
+    const { value, name } = e.target
+    setSeats({
+      ...seats,
+      [name]: value
+    })
+  }
+
+  const onCommentChange = (e) => {
+    const { value, name } = e.target
+    setComments({
+      ...comments,
+      [name]: value
+    })
+  }
+
+
   return (
     <Container>
       <NavBarForAdmin />
-      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>신청 전 예배DB 리셋하기</div>
+
+      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>현재 세팅 상태</div>
+        <div>{latestSetting==null ? "" : latestSetting.isWeekday ? "현재 주중예배(수/금)가 세팅되어 있습니다." : "주일예배가 세팅되어 있습니다."}</div>
+        
+      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>다음 신청 세팅하기</div>
       <SettingContainer>
+        <div>주중예배세팅</div>
         <Setting>
-          <Title>수요예배 DB세팅</Title>
-          <Button onClick={() => onClickWednesDay()}>{wednesday.getFullYear()}년 {wednesday.getMonth()+1}월 {wednesday.getDate()}일</Button>
+          <div>수요예배</div>
+          <Title>날짜 : {wednesday.getFullYear()}년 {wednesday.getMonth()+1}월 {wednesday.getDate()}일</Title>
+          <Title>타이머시간 : {forcingCloseWed ? '강제종료' : `${wednesday.getFullYear()}년 ${wednesday.getMonth()+1}월 ${wednesday.getDate()-1}일 19시`}</Title>
+          <Title>좌석수 : {seats.wednesday}</Title>
         </Setting>
         <Setting>
-          <Title>금요성령집회 DB세팅</Title>
-          <Button onClick={() => onClickFriDay()}>{friday.getFullYear()}년 {friday.getMonth()+1}월 {friday.getDate()}일</Button>
+          <div>금요예배</div>
+          <Title>날짜 : {friday.getFullYear()}년 {friday.getMonth()+1}월 {friday.getDate()}일</Title>
+          <Title>타이머시간 : {forcingCloseFri ? '강제종료' : `${friday.getFullYear()}년 ${friday.getMonth()+1}월 ${friday.getDate()-3}일 20시`}</Title>
+          <Title>좌석수 : {seats.friday}</Title>
         </Setting>
+        <div style={{borderTop: '1px solid black', marginBottom: 10}}/>
+        <div>
+          <div style={{display: 'flex', flexDirection: 'row', marginBottom: 10, alignItems: 'center'}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>수요예배 좌석조정</div>
+            <input name="wednesday" value={seats.wednesday} onChange={onSeatsChange} style={{width: 50}}/>
+            <div style={{marginLeft: 10, marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>금요예배 좌석조정</div>
+            <input name="friday" value={seats.friday} onChange={onSeatsChange} style={{width: 50, marginRight: 30}}/>
+            <button onClick={() => onForingCloseClick('수요일')} style={{marginRight: 20}}>수요예배 강제닫기</button>
+            <button onClick={() => onForingCloseClick('금요일')}>금요예배 강제닫기</button>
+          </div>
+          <div style={{display:'flex', marginBottom: 10}}>
+          <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '15%'}}>수요예배 이벤트입력</div>
+          <input 
+            name="commentWed" 
+            value={comments.commentWed} 
+            onChange={onCommentChange} 
+            style={{width: '30%', marginRight: 30}}
+          />
+          <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '15%'}}>금요예배 이벤트입력</div>
+          <input 
+            name="commentFri" 
+            value={comments.commentFri} 
+            onChange={onCommentChange} 
+            style={{width: '30%', marginRight: 30}}
+          />
+          </div>
+
+          <button 
+            style={{backgroundColor: 'red', border: '2px solid black', padding: 10, font: 20, fontWeight: 600}}
+            onClick={() => onClickWeekday()}
+          >
+            세팅 업데이트
+          </button>
+        </div>
+      </SettingContainer>
+      <div style={{borderTop: '2px solid black', marginBottom: 10}}/>
+      <SettingContainer>
+        <div>주일예배</div>
         <Setting>
           <Title>주일예배 DB세팅</Title>
           <Button onClick={() => onClickSunDay()}>{sunday.getFullYear()}년 {sunday.getMonth()+1}월 {sunday.getDate()}일</Button>
         </Setting>
       </SettingContainer>
 
-      <div style={{fontSize: 16, fontWeight: 600, marginBottom: 24, marginTop: 24, backgroundColor:'lightgray', padding: 10}}>타이머 세팅하기</div>
-
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>
       
       <LookupContainer>
-        <LookupButton onClick={onClickLookUpWed}>수요예배</LookupButton>
-        <LookupButton onClick={onClickLookUpFri}>금요예배</LookupButton>
-        <LookupButton onClick={onClickLookUpOne}>1부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpTwo}>2부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpThree}>3부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpFour}>4부조회</LookupButton>
-        <LookupButton onClick={onClickLookUpSix}>6부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('수요예배', '1부', wednesdayString)}>수요예배</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('금요성령집회', '1부', fridayString)}>금요예배</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '1부', sundayString)}>1부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '2부', sundayString)}>2부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '3부', sundayString)}>3부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '4부', sundayString)}>4부조회</LookupButton>
+        <LookupButton onClick={() => onClickLookUp('주일예배', '6부', sundayString)}>6부조회</LookupButton>
       </LookupContainer>
-      
       
 
       <TableContainer component={Paper}>
@@ -255,7 +318,7 @@ const AdminPage = () => {
             <>
             {userlist.map((user, index) => (
               <TableBody>
-                <TableRow key={user.id}>
+                <TableRow key={index}>
                   <TableCell align="center">{index}</TableCell>
                   <TableCell align="center">{user.name}</TableCell>
                   <TableCell align="center">{user.position}</TableCell>
@@ -280,20 +343,20 @@ const Container = styled.div`
   align-items: center; */
 `;
 
-const SettingContainer = styled.div``;
+const SettingContainer = styled.div`
+  margin-bottom: 20px;
+`;
 
 const Setting = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 10px 0;
 `;
 
 const Title = styled.div`
   display: flex;
   align-items: center;
-  padding: 1rem;
-  width: 150px;
-
+  padding-left: 1rem;
 `;
 
 const LookupContainer = styled.div`
@@ -304,7 +367,7 @@ const LookupContainer = styled.div`
 const LookupButton = styled.button`
   border: 2px solid #228be6;
   padding: 1rem;
-  margin: 0 1rem
+  margin: 0 1rem;
 `;
 
 

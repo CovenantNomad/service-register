@@ -1,68 +1,46 @@
 import React, { useContext } from 'react';
-import { useForm } from "react-hook-form";
 import { useHistory } from 'react-router-dom';
+import { useForm } from "react-hook-form";
 import styled from 'styled-components'
-import { Firebase, db } from '../../config/firebaseConfig'
 import { SettingContext } from '../../context/SettingContext'
 
 import NavBar from '../../components/NavBar'
-import SelectInput from '@material-ui/core/Select/SelectInput';
+// import { Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 
 
 const WednesdayService = () => {
-  const [ setting ] = useContext(SettingContext)
-  const { register, handleSubmit, errors, formState } = useForm()
+  const [ setting, setSetting ] = useContext(SettingContext)
+  const { register, handleSubmit, errors } = useForm()
   const history = useHistory();
-
-  const decrement = Firebase.firestore.FieldValue.increment(-1)
-  const batch = db.batch();
-
-  const onSubmit = async data => {
-    if (!formState.isSubmitting){
-      await SelectInput(500);
-
-      const submitData = {
-        ...data,
-        submitTime: new Date()
-      }
-      const statsRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc('--stats--');
-      const newuserRef = db.collection('수요예배').doc('1부').collection(setting.reservationDate).doc();
-      return db.runTransaction((transaction) => {
-        return transaction.get(statsRef).then((statsDoc) => {
-          if (statsDoc.data().ReservationCount > 0){
-            batch.set(newuserRef, submitData);
-            batch.set(statsRef, { ReservationCount: decrement }, {merge: true})
-            batch.commit()
-          } else {
-            console.log('예약실패')
-            history.push({
-              pathname: "/service-register/result", 
-              state: {
-                result: false, 
-                detail: submitData
-              }
-            })
-            return Promise.reject('실패')
-            
-          }
-        })
-      }).then(() => {
-        console.log('예약성공')
-        history.push({
-          pathname: "/service-register/result", 
-          state: {
-            result: true, 
-            detail: submitData
-          }
-        })
-      }).catch((error) => {
-        console.log(error)
-      })
-    }
-  }
 
   let latestDay = new Date();
   latestDay.setDate(latestDay.getDate() + (3 + 7 - latestDay.getDay()) % 7);
+
+  const onSubmit = (data) => {
+    if (!setting.isSubmitting) {
+
+      setSetting({
+        ...setting,
+        isSubmitting: true,
+      })
+
+      const submitData = {
+        ...data,
+        title: '수요예배',
+        serviceTime: '1부',
+        reservationDate: setting.wednesday,
+        submitTime: new Date()
+      }
+      history.push({
+        pathname: "/service-register/result", 
+        payload: submitData
+      })
+      console.log(submitData)
+      console.log('제출하였습니다')
+    } else {
+      console.log('제출중입니다')
+    }
+  }
 
   return (
     <Container>
@@ -71,21 +49,21 @@ const WednesdayService = () => {
       <InserForm onSubmit={handleSubmit(onSubmit)} style={{display:'flex', flexDirection:'column'}}>
         <InputContainer>
           <Title>이름</Title>
-          <Input name="name" placeholder="이름을 입력해주세요" ref={register({ required: true})}/>
-          {errors.name && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>이름을 입력해주세요</div>}
+          <Input name="name" placeholder="이름을 입력해주세요" ref={register({ required: true, maxLength: 4 })}/>
+          {errors.name && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>한 사람 본인 이름만 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
           <Title>직분</Title>
-          <Input name="position" placeholder="장로/권사/집사/성도/청년/학생" ref={register({ required: true})} />
+          <Input name="position" placeholder="장로/권사/집사/성도/청년/학생" ref={register({ required: true })} />
           {errors.position && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>직분을 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
           <Title>소속</Title>
-          <Input name="division" placeholder="남선교회/여선교회/시니어/청장년/영커플/인터치" ref={register({ required: true})}/>
+          <Input name="division" placeholder="남선교회/여선교회/시니어/청장년/영커플/인터치" ref={register({ required: true })}/>
           {errors.division && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>소속을 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
-          <SubmitButton type="submit" disabled={formState.isSubmitting}>예배신청하기</SubmitButton>
+          <SubmitButton type="submit" disabled={setting.isSubmitting}>예배신청하기</SubmitButton>
         </InputContainer>
       </InserForm>
     </Container>

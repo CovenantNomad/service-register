@@ -9,14 +9,36 @@ const LoadingPage = () => {
   const history = useHistory();
 
   const initialize = async () => {
-    const settingRef = db.collection('디비세팅').doc('최신일자')
+    const settingRef = db.collection('setting').doc('latest')
     await settingRef.get().then((doc) => {
       if (doc.exists) {
         setSetting({
           ...setting,
           init: true,
-          title: doc.data().title,
-          reservationDate: doc.data().reservationDate
+          isWeekday: doc.data().isWeekday,
+          wednesday: doc.data().wednesday,
+          friday: doc.data().friday,
+          sunday: "",
+          TimerWednesDay: doc.data().TimerWednesDay,
+          TimerFriDay: doc.data().TimerFriDay,
+          TimerSunDay: "",
+          forcingCloseWed: doc.data().forcingCloseWed,
+          forcingCloseFri: doc.data().forcingCloseFri,
+          forcingCloseSun: false,
+          wednesDaySeats: doc.data().wednesDaySeats,
+          fridaySeats: doc.data().fridaySeats,
+          sundayOneSeats: doc.data().sundayOneSeats,
+          sundayTwoSeats: doc.data().sundayTwoSeats,
+          sundayThreeSeats: doc.data().sundayThreeSeats,
+          sundayFourSeats: doc.data().sundayFourSeats,
+          sundaySixSeats: doc.data().sundaySixSeats,
+          commentWed: doc.data().commentWed,
+          commentFri: doc.data().commentFri,
+          commentSunOne: doc.data().commentSunOne,
+          commentSunTwo: doc.data().commentSunTwo,
+          commentSunThree: doc.data().commentSunThree,
+          commentSunFour: doc.data().commentSunFour,
+          commentSunSix: doc.data().commentSunSix,
         })
         console.log("세팅업데이트 성공");
       } else {
@@ -29,14 +51,13 @@ const LoadingPage = () => {
 
   useEffect(() => {
     console.log('무한루프체크')
-    if (!setting.init) {
-      initialize()
-      .then(()=>{
-        history.push({
-          pathname: "/service-register/main"
-        })
-      })}
-  })
+    initialize()
+    .then(()=>{
+      history.push({
+        pathname: "/service-register/main"
+      })
+    })
+  }, [])
 
   console.log(setting)
 
@@ -45,7 +66,6 @@ const LoadingPage = () => {
       <div>화양교회 예배신청 페이지입니다</div>
       <div>잠시만 기다려 주세요</div>
     </Container>
-    
   )
 }
 

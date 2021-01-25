@@ -32,8 +32,8 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
           <div style={{display: 'flex', flexDirection:'column'}}>
             <BodyContainer>
               <TimeContainer>
-                <div>1부 영상예배</div>
-                <div>오전 7시 10분</div>
+                <div>1부 (영상)</div>
+                <div>7시10분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -56,7 +56,7 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
             <BodyContainer>
               <TimeContainer>
                 <div>2부</div>
-                <div>오전 8시 00분</div>
+                <div>8시00분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -78,7 +78,7 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
             <BodyContainer>
               <TimeContainer>
                 <div>3부</div>
-                <div>오전 9시 30분</div>
+                <div>9시30분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -101,7 +101,7 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
             <BodyContainer>
               <TimeContainer>
                 <div>4부</div>
-                <div>오전 11시 00분</div>
+                <div>11시00분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
@@ -124,8 +124,8 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
             
             <BodyContainer>
               <TimeContainer>
-                <div>6부 영상예배</div>
-                <div>오후 4시 00분</div>
+                <div>6부 (영상)</div>
+                <div>4시00분</div>
               </TimeContainer>
               <AvailableContainer>
                 {!setting.openSunDay ? (
