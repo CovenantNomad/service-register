@@ -167,8 +167,6 @@ const ResultPage = () => {
           )}
           </>
         )}
- 
-
 
       </ResultContainer>
     </Container>
@@ -196,13 +194,13 @@ const CheckContainer = styled.div`
 
 const CheckButton = styled.div`
   margin-bottom: 1rem; 
-  background-color: #228be6;
-  padding: 20px;
+  background-color: #4D826C;
+  padding: 0.75rem;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #fff;
-  font-size: 2rem;
+  font-size: 1.5rem;
   border-radius: 16px;
 `;
 
