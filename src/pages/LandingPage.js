@@ -10,12 +10,15 @@ import SundayServiceButton from '../components/SundayServiceButton'
 
 const LandingPage = () => {
   const [ setting ] = useContext(SettingContext)
+  const [ openWednesDay, setOpenWednesDay ] = useState(false)
+  const [ openFriDay, setOpenFriDay ] = useState(false)
+  const [ openSunDay, setOpenSunDay ] = useState(false)
   const [ remainingWednesDay, setRemainingWednesDay ] = useState(70)
   const [ remainingFriDay, setRemainingFriDay ] = useState(70)
   const [ remainingSunDayFirst, setRemainingSunDayFirst ] = useState(70)
   const [ remainingSunDaySecond, setRemainingSunDaySecond ] = useState(70)
   const [ remainingSunDayThird, setRemainingSunDayThird ] = useState(70)
-  const [ remainingSunDayFourth, setRemainingSunDayFourth ] = useState(40)
+  const [ remainingSunDayFourth, setRemainingSunDayFourth ] = useState(70)
   const [ remainingSunDaySixth, setRemainingSunDaySixth ] = useState(70)
 
   useEffect(() => {
@@ -128,12 +131,18 @@ const LandingPage = () => {
       {setting.isWeekday ? (
         <>
           {/* <div>현재 신청예정 예배는 {setting.forcingCloseWed ? "" : '수요예배,'} {setting.forcingCloseFri ? "" : '금요성령집회'}입니다.</div> */}
-          <Timer title="수요예배" date={new Date(setting.TimerWednesDay[0], setting.TimerWednesDay[1], setting.TimerWednesDay[2], setting.TimerWednesDay[3])}/>
+          {/* <Timer 
+            title="수요예배" 
+            date={new Date(setting.TimerWednesDay[0], setting.TimerWednesDay[1], setting.TimerWednesDay[2], setting.TimerWednesDay[3], setting.TimerFriDay[4])} 
+            settingFunction={setOpenWednesDay}
+            forcingClose={setting.forcingCloseWed}
+          /> */}
+          <Timer title="수요예배" date={new Date(2021, 0, 26, 0, 59)} settingFunction={setOpenWednesDay} forcingClose={setting.forcingCloseWed}/>
           <WeekdayServiceButton 
             days="수요일"
             title="수요예배" 
             time="7시30분"
-            open={setting.openWednesDay}
+            open={openWednesDay}
             forcingClose={setting.forcingCloseWed}
             remaining={remainingWednesDay}
             total={setting.wednesDaySeats} 
@@ -143,12 +152,18 @@ const LandingPage = () => {
 
           <div style={{marginBottom: 40}}/>
     
-          <Timer title="금요성령집회" date={new Date(setting.TimerFriDay[0], setting.TimerFriDay[1], setting.TimerFriDay[2], setting.TimerFriDay[3])}/>
+          <Timer 
+            title="금요성령집회" 
+            date={new Date(setting.TimerFriDay[0], setting.TimerFriDay[1], setting.TimerFriDay[2], setting.TimerFriDay[3], setting.TimerFriDay[4])} 
+            settingFunction={setOpenFriDay}
+            forcingClose={setting.forcingCloseFri}
+          />
+          {/* <Timer title="금요성령집회" date={new Date(2021, 0, 26, 0, 45)} settingFunction={setOpenFriDay}/> */}
           <WeekdayServiceButton 
             days="금요일" 
             title="금요성령집회" 
             time="8시00분"
-            open={setting.openFriDay}
+            open={openFriDay}
             forcingClose={setting.forcingCloseFri}
             remaining={remainingFriDay} 
             total={setting.fridaySeats} 
@@ -158,9 +173,10 @@ const LandingPage = () => {
         </>
       ) : (
         <>
-          <Timer title="주일예배" date={new Date(setting.TimerSunDay[0], setting.TimerSunDay[1], setting.TimerSunDay[2], setting.TimerSunDay[3])}/>
+          <Timer title="주일예배" date={new Date(setting.TimerSunDay[0], setting.TimerSunDay[1], setting.TimerSunDay[2], setting.TimerSunDay[3], setting.TimerFriDay[4])} settingFunction={setOpenSunDay}/>
           <SundayServiceButton 
           remaining={[remainingSunDayFirst, remainingSunDaySecond, remainingSunDayThird, remainingSunDayFourth, remainingSunDaySixth]}
+          open={openSunDay}
           linkTo="/service-register/sunday"
         />
         </>

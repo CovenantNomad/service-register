@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled from 'styled-components'
 import { SettingContext } from '../context/SettingContext'
 
-const Timer = ({ title, date }) => {
+const Timer = ({ title, date, settingFunction, forcingClose }) => {
   const [ timerDays, setTimerDays ] = useState('00')
   const [ timerHours, setTimerHours ] = useState('00')
   const [ timerMinutes, setTimerMinutes ] = useState('00')
@@ -11,6 +11,7 @@ const Timer = ({ title, date }) => {
   const [ setting, setSetting ] = useContext(SettingContext)
 
   let interval = useRef()
+  let settingRef = useRef(setting)
 
   const startTimer = () => {
     const countdownDate = date.getTime()
@@ -28,22 +29,7 @@ const Timer = ({ title, date }) => {
         // stop our timer
         clearInterval(interval)
         setStop(true)
-        if (title === "수요예배") {
-          setSetting({
-            ...setting,
-            openWednesDay: true
-          })
-        } else if (title === "금요성령집회") {
-          setSetting({
-            ...setting,
-            openFriDay: true
-          })
-        } else if (title === "주일예배") {
-          setSetting({
-            ...setting,
-            openSunDay: true
-          })
-        }
+        settingFunction(true)
       } else {
         setTimerDays(days)
         setTimerHours(hours)
@@ -54,28 +40,12 @@ const Timer = ({ title, date }) => {
   }
 
   useEffect(() => {
-    if (title === "수요예배") {
-      if (!setting.forcingCloseWed) {
-        startTimer()
-      }
-      else {
-        return
-      }
-    } else if (title === "금요성령집회") {
-      if (!setting.forcingCloseFri) {
-        startTimer()
-      }
-      else {
-        return
-      }
-    } else if (title === "주일예배") {
-      if (!setting.forcingCloseSun) {
-        startTimer()
-      }
-      else {
-        return
-      }
+    if (!forcingClose) {
+      startTimer()
+    } else {
+      return startTimer()
     }
+
   }, [])
 
   return (

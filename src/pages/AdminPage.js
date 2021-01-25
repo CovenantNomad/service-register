@@ -24,7 +24,7 @@ const AdminPage = () => {
   const [ forcingCloseFri, setForcingCloseFri ] = useState(false)
   const [ forcingCloseSun, setForcingCloseSun ] = useState(false)
   const [ seats, setSeats ] = useState({
-    wednesDay: 70,
+    wednesday: 70,
     friday: 70,
     sundayOne: 70,
     sundayTwo: 70,
@@ -84,21 +84,20 @@ const AdminPage = () => {
       const wedRef = db.collection('수요예배').doc('1부').collection(wednesdayString).doc('--stats--')
       const friRef = db.collection('금요성령집회').doc('1부').collection(fridayString).doc('--stats--')
       const settingRef = db.collection('setting').doc('latest')
-      batch.set(wedRef, { ReservationCount: seats.wednesDay })
+      batch.set(wedRef, { ReservationCount: seats.wednesday })
       batch.set(friRef, { ReservationCount: seats.friday })
       batch.update(settingRef, {
         isWeekday: true,
         wednesday: wednesdayString,
         friday: fridayString,
         sunday: "",
-        TimerWednesDay: [wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-2, 19],
-        TimerFriDay: [friday.getFullYear(), friday.getMonth(), friday.getDate()-5, 20],
+        TimerWednesDay: [wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19, 0],
+        TimerFriDay: [friday.getFullYear(), friday.getMonth(), friday.getDate()-3, 20, 0],
         TimerSunDay: "",
         forcingCloseWed: forcingCloseWed,
         forcingCloseFri: forcingCloseFri,
-        forcingCloseSun: false,
-        wednesDaySeats: seats.wednesDay,
-        fridaySeats: seats.friday,
+        wednesDaySeats: parseInt(seats.wednesday),
+        fridaySeats: parseInt(seats.friday),
         sundayOneSeats: "",
         sundayTwoSeats: "",
         sundayThreeSeats: "",
@@ -141,19 +140,18 @@ const AdminPage = () => {
       wednesday: "",
       friday: "",
       sunday: sundayString,
-      TimerWednesDay: "new Date(wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19)",
+      TimerWednesDay: "",
       TimerFriDay: "",
-      TimerSunDay: [sunday.getFullYear(), sunday.getMonth(), sunday.getDate()-3, 19],
+      TimerSunDay: [sunday.getFullYear(), sunday.getMonth(), sunday.getDate()-3, 19, 0],
       forcingCloseWed: false,
       forcingCloseFri: false,
-      forcingCloseSun: forcingCloseSun,
       wednesDaySeats: "",
       fridaySeats: "",
-      sundayOneSeats: seats.sundayOne,
-      sundayTwoSeats: seats.sundayTwo,
-      sundayThreeSeats: seats.sundayThree,
-      sundayFourSeats: seats.sundayFour,
-      sundaySixSeats: seats.sundaySix,
+      sundayOneSeats: parseInt(seats.sundayOne),
+      sundayTwoSeats: parseInt(seats.sundayTwo),
+      sundayThreeSeats: parseInt(seats.sundayThree),
+      sundayFourSeats: parseInt(seats.sundayFour),
+      sundaySixSeats: parseInt(seats.sundaySix),
       commentWed: "",
       commentFri: "",
       commentSunOne: comments.commentSunOne,
@@ -216,9 +214,7 @@ const AdminPage = () => {
   }
 
   const onCommentChange = (e) => {
-    
     const { value, name } = e.target
-    console.log(value)
     setComments({
       ...comments,
       [name]: value
@@ -240,7 +236,7 @@ const AdminPage = () => {
           <div>수요예배</div>
           <Title>날짜 : {wednesday.getFullYear()}년 {wednesday.getMonth()+1}월 {wednesday.getDate()}일</Title>
           <Title>타이머시간 : {forcingCloseWed ? '강제종료' : `${wednesday.getFullYear()}년 ${wednesday.getMonth()+1}월 ${wednesday.getDate()-1}일 19시`}</Title>
-          <Title>좌석수 : {seats.wednesDay}</Title>
+          <Title>좌석수 : {seats.wednesday}</Title>
         </Setting>
         <Setting>
           <div>금요예배</div>
@@ -252,7 +248,7 @@ const AdminPage = () => {
         <div>
           <div style={{display: 'flex', flexDirection: 'row', marginBottom: 10, alignItems: 'center'}}>
             <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>수요예배 좌석조정</div>
-            <input name="wednesday" value={seats.wednesDay} onChange={onSeatsChange} style={{width: 50}}/>
+            <input name="wednesday" value={seats.wednesday} onChange={onSeatsChange} style={{width: 50}}/>
             <div style={{marginLeft: 10, marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>금요예배 좌석조정</div>
             <input name="friday" value={seats.friday} onChange={onSeatsChange} style={{width: 50, marginRight: 30}}/>
             <button onClick={() => onForingCloseClick('수요일')} style={{marginRight: 20}}>수요예배 강제닫기</button>

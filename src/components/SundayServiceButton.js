@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { SettingContext } from '../context/SettingContext'
 import LinkedButton from './LinkedButton'
 
-const SundayServiceButton = ({ remaining, linkTo}) => {
+const SundayServiceButton = ({ remaining, open, linkTo}) => {
   const [ setting ] = useContext(SettingContext)
 
   let latestDay = new Date();
@@ -36,11 +36,11 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 <div>7시10분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!setting.openSunDay ? (
+                {!open ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {setting.openSunDay && remaining[0] > 0 ? (
+                  {open && remaining[0] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -59,11 +59,11 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 <div>8시00분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!setting.openSunDay ? (
+                {!open ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {setting.openSunDay && remaining[1] > 0 ? (
+                  {open && remaining[1] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -81,11 +81,11 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 <div>9시30분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!setting.openSunDay ? (
+                {!open ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {setting.openSunDay && remaining[2] > 0 ? (
+                  {open && remaining[2] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -104,11 +104,11 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 <div>11시00분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!setting.openSunDay ? (
+                {!open ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {setting.openSunDay && remaining[3] > 0 ? (
+                  {open && remaining[3] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
@@ -128,11 +128,11 @@ const SundayServiceButton = ({ remaining, linkTo}) => {
                 <div>4시00분</div>
               </TimeContainer>
               <AvailableContainer>
-                {!setting.openSunDay ? (
+                {!open ? (
                   <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
                 ):(
                   <>
-                  {setting.openSunDay && remaining[4] > 0 ? (
+                  {open && remaining[4] > 0 ? (
                     <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>

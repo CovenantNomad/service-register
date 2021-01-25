@@ -27,8 +27,8 @@ const WednesdayService = () => {
       const submitData = {
         ...data,
         title: '수요예배',
-        time: '1부',
-        date: setting.wednesday,
+        serviceTime: '1부',
+        reservationDate: setting.wednesday,
         submitTime: new Date()
       }
       history.push({

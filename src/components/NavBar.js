@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { UserContext } from '../context/UserContext'
 
 const NavBar = () => {
-  const [ isLoggedIn, _ ] = useContext(UserContext)
+  const [ userInfo ] = useContext(UserContext)
 
   return (
     <AppBar>
@@ -14,7 +14,7 @@ const NavBar = () => {
         <ArrowBackIcon fontSize='small'/>
       </IconContainer> */}
       <LogoText>ANOINTING HWAYANG</LogoText>
-      <IconContainer to={isLoggedIn ? "/service-register/admin": "/service-register/auth"}>
+      <IconContainer to={userInfo.isLoggedIn ? "/service-register/admin": "/service-register/auth"}>
         <SettingsIcon fontSize='small'/>
       </IconContainer>
   </AppBar>

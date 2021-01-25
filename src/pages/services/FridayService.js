@@ -7,13 +7,13 @@ import { SettingContext } from '../../context/SettingContext'
 import NavBar from '../../components/NavBar'
 // import { Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 
-const FridayService = (props) => {
+const FridayService = () => {
   const [ setting, setSetting ] = useContext(SettingContext)
   const { register, handleSubmit, errors } = useForm()
   const history = useHistory();
 
   let latestDay = new Date();
-  latestDay.setDate(latestDay.getDate() + (3 + 7 - latestDay.getDay()) % 7);
+  latestDay.setDate(latestDay.getDate() + (5 + 7 - latestDay.getDay()) % 7);
 
   const onSubmit = (data) => {
     if (!setting.isSubmitting) {
@@ -26,8 +26,8 @@ const FridayService = (props) => {
       const submitData = {
         ...data,
         title: '금요성령집회',
-        time: '1부',
-        date: setting.friday,
+        serviceTime: '1부',
+        reservationDate: setting.friday,
         submitTime: new Date()
       }
       history.push({
@@ -44,7 +44,7 @@ const FridayService = (props) => {
   return (
     <Container>
       <NavBar />
-      <Header>{latestDay.getMonth()+1}월 {latestDay.getDate()}일 수요예배 신청</Header>
+      <Header>{latestDay.getMonth()+1}월 {latestDay.getDate()}일 금요성령집회 신청</Header>
       <InserForm onSubmit={handleSubmit(onSubmit)} style={{display:'flex', flexDirection:'column'}}>
         <InputContainer>
           <Title>이름</Title>
