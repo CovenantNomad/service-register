@@ -106,7 +106,7 @@ const Timer = ({ title, date }) => {
 const BackgroundContainer = styled.div`
   background-color: #73c6c9;
   /* box-sizing: border-box; */
-  width: 90%;
+  width: 80%;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -119,7 +119,7 @@ const TimerContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 24px 12px;
+  padding: 1rem 1rem;
 `;
 
 const Title = styled.div`

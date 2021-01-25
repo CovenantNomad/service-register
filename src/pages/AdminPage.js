@@ -32,6 +32,15 @@ const AdminPage = () => {
     sundayFour: 70,
     sundaySix: 70,
   })
+  const [ comments, setComments ] = useState({
+    commentWed: "",
+    commentFri: "",
+    commentSunOne: "",
+    commentSunTwo: "",
+    commentSunThree: "",
+    commentSunFour: "",
+    commentSunSix: "",
+  })
 
   const loadSettings = () => {
     db.collection('setting').doc('latest').get().then((doc) => {
@@ -48,10 +57,10 @@ const AdminPage = () => {
 
   useEffect(() => {
     console.log('세팅값 불러오는 중')
-    if (latestSetting == null) {
+    if (latestSetting === null) {
       loadSettings()
     }
-  }, [])
+  }, [latestSetting])
 
 
 
@@ -74,23 +83,34 @@ const AdminPage = () => {
   const onClickWeekday = () => {
       const wedRef = db.collection('수요예배').doc('1부').collection(wednesdayString).doc('--stats--')
       const friRef = db.collection('금요성령집회').doc('1부').collection(fridayString).doc('--stats--')
-      batch.set(wedRef, { ReservationCount: 70 })
-      batch.set(friRef, { ReservationCount: 70 })
       const settingRef = db.collection('setting').doc('latest')
+      batch.set(wedRef, { ReservationCount: seats.wednesDay })
+      batch.set(friRef, { ReservationCount: seats.friday })
       batch.update(settingRef, {
         isWeekday: true,
-        wednesday: wednesday,
-        friday: friday,
+        wednesday: wednesdayString,
+        friday: fridayString,
         sunday: "",
-        TimerWednesDay: new Date(wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19),
-        TimerFriDay: new Date(friday.getFullYear(), friday.getMonth(), friday.getDate()-3, 20),
+        TimerWednesDay: [wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19],
+        TimerFriDay: [friday.getFullYear(), friday.getMonth(), friday.getDate()-3, 20],
         TimerSunDay: "",
-        openWednesDay: true,
-        openFriDay: true,
-        openSunDay: false,
         forcingCloseWed: forcingCloseWed,
         forcingCloseFri: forcingCloseFri,
         forcingCloseSun: false,
+        wednesDaySeats: seats.wednesDay,
+        fridaySeats: seats.friday,
+        sundayOneSeats: "",
+        sundayTwoSeats: "",
+        sundayThreeSeats: "",
+        sundayFourSeats: "",
+        sundaySixSeats: "",
+        commentWed: comments.commentWed,
+        commentFri: comments.commentFri,
+        commentSunOne: "",
+        commentSunTwo: "",
+        commentSunThree: "",
+        commentSunFour: "",
+        commentSunSix: "",
       })
       batch.commit()
       .then(() => {
@@ -110,15 +130,37 @@ const AdminPage = () => {
     const thirdRef = db.collection('주일예배').doc('3부').collection(sundayString).doc('--stats--')
     const forthRef = db.collection('주일예배').doc('4부').collection(sundayString).doc('--stats--')
     const sixthRef = db.collection('주일예배').doc('6부').collection(sundayString).doc('--stats--')
-    batch.set(firstRef, { ReservationCount: 70 })
-    batch.set(secondRef, { ReservationCount: 70 })
-    batch.set(thirdRef, { ReservationCount: 70 })
-    batch.set(forthRef, { ReservationCount: 40 })
-    batch.set(sixthRef, { ReservationCount: 70 })
-    const settingRef = db.collection('디비세팅').doc('최신일자')
+    const settingRef = db.collection('setting').doc('latest')
+    batch.set(firstRef, { ReservationCount: seats.sundayOne })
+    batch.set(secondRef, { ReservationCount: seats.sundayTwo })
+    batch.set(thirdRef, { ReservationCount: seats.sundayThree })
+    batch.set(forthRef, { ReservationCount: seats.sundayFour })
+    batch.set(sixthRef, { ReservationCount: seats.sundaySix })
     batch.update(settingRef, {
-      title: "주일예배",
-      reservationDate: sundayString.toString()
+      isWeekday: false,
+      wednesday: "",
+      friday: "",
+      sunday: sundayString,
+      TimerWednesDay: "new Date(wednesday.getFullYear(), wednesday.getMonth(), wednesday.getDate()-1, 19)",
+      TimerFriDay: "",
+      TimerSunDay: [sunday.getFullYear(), sunday.getMonth(), sunday.getDate()-3, 19],
+      forcingCloseWed: false,
+      forcingCloseFri: false,
+      forcingCloseSun: forcingCloseSun,
+      wednesDaySeats: "",
+      fridaySeats: "",
+      sundayOneSeats: seats.sundayOne,
+      sundayTwoSeats: seats.sundayTwo,
+      sundayThreeSeats: seats.sundayThree,
+      sundayFourSeats: seats.sundayFour,
+      sundaySixSeats: seats.sundaySix,
+      commentWed: "",
+      commentFri: "",
+      commentSunOne: comments.commentSunOne,
+      commentSunTwo: comments.commentSunTwo,
+      commentSunThree: comments.commentSunThree,
+      commentSunFour: comments.commentSunFour,
+      commentSunSix: comments.commentSunSix,
     })
     batch.commit()
     .then(() => {
@@ -133,11 +175,16 @@ const AdminPage = () => {
 
   const onClickLookUp = (title, time, date) => {
     db.collection(title).doc(time).collection(date).orderBy("submitTime").get().then((querySnapshot) => {
-      const tempArray = querySnapshot.forEach((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
+      let tempArray = []
+       querySnapshot.forEach((doc) => {
+         tempArray.push({
+          id: doc.id,
+          ...doc.data()
+         })
+      })
       setUserlist(tempArray)
+    }).catch(error => {
+      console.log(error)
     })
   }
 
@@ -152,11 +199,11 @@ const AdminPage = () => {
 
   const onForingCloseClick = (days) => {
     if (days === "수요일") {
-      setForcingCloseWed(true)
+      setForcingCloseWed(!forcingCloseWed)
     } else if (days === "금요일") {
-      setForcingCloseFri(true)
+      setForcingCloseFri(!forcingCloseFri)
     } else if (days === "주일") {
-      setForcingCloseSun(true)
+      setForcingCloseSun(!forcingCloseSun)
     }
   }
 
@@ -168,6 +215,15 @@ const AdminPage = () => {
     })
   }
 
+  const onCommentChange = (e) => {
+    
+    const { value, name } = e.target
+    console.log(value)
+    setComments({
+      ...comments,
+      [name]: value
+    })
+  }
 
 
   return (
@@ -195,14 +251,28 @@ const AdminPage = () => {
         <div style={{borderTop: '1px solid black', marginBottom: 10}}/>
         <div>
           <div style={{display: 'flex', flexDirection: 'row', marginBottom: 10, alignItems: 'center'}}>
-            <div style={{marginRight: 10}}>수요예배 좌석조정</div>
-            <input name="wednesday" value={seats.wednesDay} onChange={onSeatsChange}/>
-            <div style={{marginLeft: 10, marginRight: 10}}>금요예배 좌석조정</div>
-            <input name="friday" value={seats.friday} onChange={onSeatsChange}/>
-          </div>
-          <div style={{display:'flex', marginBottom: 10}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>수요예배 좌석조정</div>
+            <input name="wednesday" value={seats.wednesDay} onChange={onSeatsChange} style={{width: 50}}/>
+            <div style={{marginLeft: 10, marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>금요예배 좌석조정</div>
+            <input name="friday" value={seats.friday} onChange={onSeatsChange} style={{width: 50, marginRight: 30}}/>
             <button onClick={() => onForingCloseClick('수요일')} style={{marginRight: 20}}>수요예배 강제닫기</button>
             <button onClick={() => onForingCloseClick('금요일')}>금요예배 강제닫기</button>
+          </div>
+          <div style={{display:'flex', marginBottom: 10}}>
+          <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '15%'}}>수요예배 이벤트입력</div>
+          <input 
+            name="commentWed" 
+            value={comments.commentWed} 
+            onChange={onCommentChange} 
+            style={{width: '30%', marginRight: 30}}
+          />
+          <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '15%'}}>금요예배 이벤트입력</div>
+          <input 
+            name="commentFri" 
+            value={comments.commentFri} 
+            onChange={onCommentChange} 
+            style={{width: '30%', marginRight: 30}}
+          />
           </div>
 
           <button 
@@ -234,7 +304,6 @@ const AdminPage = () => {
         <LookupButton onClick={() => onClickLookUp('주일예배', '6부', sundayString)}>6부조회</LookupButton>
       </LookupContainer>
       
-      
 
       <TableContainer component={Paper}>
         <Table aria-label="simple table" style={{minWidth: 250}}>
@@ -251,7 +320,7 @@ const AdminPage = () => {
             <>
             {userlist.map((user, index) => (
               <TableBody>
-                <TableRow key={user.id}>
+                <TableRow key={index}>
                   <TableCell align="center">{index}</TableCell>
                   <TableCell align="center">{user.name}</TableCell>
                   <TableCell align="center">{user.position}</TableCell>
@@ -300,7 +369,7 @@ const LookupContainer = styled.div`
 const LookupButton = styled.button`
   border: 2px solid #228be6;
   padding: 1rem;
-  margin: 0 1rem
+  margin: 0 1rem;
 `;
 
 

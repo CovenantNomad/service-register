@@ -22,12 +22,23 @@ const LoadingPage = () => {
           TimerWednesDay: doc.data().TimerWednesDay,
           TimerFriDay: doc.data().TimerFriDay,
           TimerSunDay: "",
-          openWednesDay: doc.data().openWednesDay,
-          openFriDay: doc.data().openFriDay,
-          openSunDay: false,
           forcingCloseWed: doc.data().forcingCloseWed,
           forcingCloseFri: doc.data().forcingCloseFri,
           forcingCloseSun: false,
+          wednesDaySeats: doc.data().wednesDaySeats,
+          fridaySeats: doc.data().fridaySeats,
+          sundayOneSeats: doc.data().sundayOneSeats,
+          sundayTwoSeats: doc.data().sundayTwoSeats,
+          sundayThreeSeats: doc.data().sundayThreeSeats,
+          sundayFourSeats: doc.data().sundayFourSeats,
+          sundaySixSeats: doc.data().sundaySixSeats,
+          commentWed: doc.data().commentWed,
+          commentFri: doc.data().commentFri,
+          commentSunOne: doc.data().commentSunOne,
+          commentSunTwo: doc.data().commentSunTwo,
+          commentSunThree: doc.data().commentSunThree,
+          commentSunFour: doc.data().commentSunFour,
+          commentSunSix: doc.data().commentSunSix,
         })
         console.log("세팅업데이트 성공");
       } else {
@@ -40,14 +51,13 @@ const LoadingPage = () => {
 
   useEffect(() => {
     console.log('무한루프체크')
-    if (!setting.init) {
-      initialize()
-      .then(()=>{
-        history.push({
-          pathname: "/service-register/main"
-        })
-      })}
-  })
+    initialize()
+    .then(()=>{
+      history.push({
+        pathname: "/service-register/main"
+      })
+    })
+  }, [])
 
   console.log(setting)
 

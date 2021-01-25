@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import LinkedButton from './LinkedButton'
 
-const WeekdayServiceButton = ({ days, title, time, open, forcingClose, remaining, linkTo }) => {
+const WeekdayServiceButton = ({ days, title, time, open, forcingClose, remaining, total, linkTo, comments }) => {
 
   const getDays = (days) => {
     if (days === '수요일') {
@@ -35,14 +35,18 @@ const WeekdayServiceButton = ({ days, title, time, open, forcingClose, remaining
         <Header>
           <div style={{fontSize: 24, fontWeight: 700}} >{title}</div>
         </Header>
-        <BodyContainer>
+        {comments !== "" ? (
+          <div>{comments}</div>
+        ) : (
+          <>
+          <BodyContainer>
           <TimeContainer>
             <div>저녁</div>
             <div>{time}</div>
           </TimeContainer>
           <AvailableContainer>
             {forcingClose ? (
-              <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
+              <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청대기</div>
             ) : (
               <>
                 {!open ? (
@@ -50,7 +54,7 @@ const WeekdayServiceButton = ({ days, title, time, open, forcingClose, remaining
                 ):(
                   <>
                   {open && remaining > 0 ? (
-                    <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>신청가능</div>
+                    <div style={{fontSize: 16, fontWeight: 400, color:'#F97878'}}>테스트중</div>
                   ) : (
                     <div style={{fontSize: 16, fontWeight: 400, color:'black'}}>신청완료</div>
                   )}
@@ -60,9 +64,12 @@ const WeekdayServiceButton = ({ days, title, time, open, forcingClose, remaining
             )}            
           </AvailableContainer>
           <CounterContainer>
-            {remaining < 0 ? 0 : remaining}/70명
+            {remaining < 0 ? 0 : remaining}/{total}명
           </CounterContainer>
         </BodyContainer>
+        </>
+        )}
+        
       </InfoContainer>
     </LinkedButton>
   )
@@ -74,7 +81,7 @@ const DateContainer = styled.div`
   flex: 1;
   align-items: center;
   justify-content: center;
-  color: black;
+  color: #fff;
   border: 2px #228be6 solid;
   background: #228be6;
   padding: 1rem 0;
@@ -82,7 +89,6 @@ const DateContainer = styled.div`
 `;
 const InfoContainer = styled.div`
   flex: 3;
-  padding-left: 10px;
   display: flex;
   flex-direction: column;
   padding: 1rem 0.75rem;
@@ -90,11 +96,13 @@ const InfoContainer = styled.div`
 const Header = styled.div`
   padding-bottom: 1rem;
   color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 const BodyContainer = styled.div`
   display: flex;
   color: black;
-  margin-bottom: 1rem;
 `;
 const TimeContainer = styled.div`
   margin-right: 1rem;
