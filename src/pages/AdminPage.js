@@ -275,17 +275,97 @@ const AdminPage = () => {
             style={{backgroundColor: 'red', border: '2px solid black', padding: 10, font: 20, fontWeight: 600}}
             onClick={() => onClickWeekday()}
           >
-            세팅 업데이트
+            주중예배 세팅 업데이트
           </button>
         </div>
       </SettingContainer>
       <div style={{borderTop: '2px solid black', marginBottom: 10}}/>
       <SettingContainer>
-        <div>주일예배</div>
+        <div>주일예배세팅</div>
         <Setting>
-          <Title>주일예배 DB세팅</Title>
-          <Button onClick={() => onClickSunDay()}>{sunday.getFullYear()}년 {sunday.getMonth()+1}월 {sunday.getDate()}일</Button>
+          <Title>날짜 : {sunday.getFullYear()}년 {sunday.getMonth()+1}월 {sunday.getDate()}일</Title>
+          <Title>타이머시간 : {forcingCloseWed ? '강제종료' : `${sunday.getFullYear()}년 ${sunday.getMonth()+1}월 ${sunday.getDate()-3}일 19시`}</Title>
         </Setting>
+        <Setting>
+          <Title>1부 좌석수 : {seats.sundayOne}</Title>
+          <Title>2부 좌석수 : {seats.sundayTwo}</Title>
+          <Title>3부 좌석수 : {seats.sundayThree}</Title>
+          <Title>4부 좌석수 : {seats.sundayFour}</Title>
+          <Title>6부 좌석수 : {seats.sundaySix}</Title>
+        </Setting>
+        <div style={{borderTop: '1px solid black', marginBottom: 10}} />
+        <div>
+          <div style={{display: 'flex', flexDirection: 'row', marginBottom: 10, alignItems: 'center'}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>1부예배 좌석조정</div>
+            <input name="sundayOne" value={seats.sundayOne} onChange={onSeatsChange}  style={{width: 30, marginRight: 10}}/>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>2부예배 좌석조정</div>
+            <input name="sundayTwo" value={seats.sundayTwo} onChange={onSeatsChange}  style={{width: 30, marginRight: 10}}/>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>3부예배 좌석조정</div>
+            <input name="sundayThree" value={seats.sundayThree} onChange={onSeatsChange}  style={{width: 30, marginRight: 10}}/>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>4부예배 좌석조정</div>
+            <input name="sundayFour" value={seats.sundayFour} onChange={onSeatsChange} style={{width: 30, marginRight: 10}}/>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: 60}}>6부예배 좌석조정</div>
+            <input name="sundaySix" value={seats.sundaySix} onChange={onSeatsChange} style={{width: 30, marginRight: 10}}/>
+          </div>
+          <div style={{display:'flex', marginBottom: 10, flexDirection:'column'}}>
+            <div style={{display:'flex', marginBottom: 10, flexDirection:'row'}}>
+              <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '25%', alignItems: 'center'}}>1부예배 이벤트입력</div>
+              <input 
+                name="commentSunOne" 
+                value={comments.commentSunOne} 
+                onChange={onCommentChange} 
+                style={{width: '70%', height: '1.5rem'}}
+              />
+            </div>
+
+            <div style={{display:'flex', marginBottom: 10, flexDirection:'row'}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '25%', alignItems: 'center'}}>2부예배 이벤트입력</div>
+              <input 
+                name="commentSunTwo" 
+                value={comments.commentSunTwo} 
+                onChange={onCommentChange} 
+                style={{width: '70%', height: '1.5rem'}}
+              />
+            </div>
+
+            <div style={{display:'flex', marginBottom: 10, flexDirection:'row'}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '25%', alignItems: 'center'}}>3부예배 이벤트입력</div>
+              <input 
+                name="commentSunThree" 
+                value={comments.commentSunThree} 
+                onChange={onCommentChange} 
+                style={{width: '70%', height: '1.5rem'}}
+              />
+            </div>
+
+            <div style={{display:'flex', marginBottom: 10, flexDirection:'row'}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '25%', alignItems: 'center'}}>4부예배 이벤트입력</div>
+              <input 
+                name="commentSunFour" 
+                value={comments.commentSunFour} 
+                onChange={onCommentChange} 
+                style={{width: '70%', height: '1.5rem'}}
+              />
+            </div>
+
+            <div style={{display:'flex', marginBottom: 10, flexDirection:'row'}}>
+            <div style={{marginRight: 10, display:'flex', flexWrap:'wrap', width: '25%', alignItems: 'center'}}>6부예배 이벤트입력</div>
+              <input 
+                name="commentSunSix" 
+                value={comments.commentSunSix} 
+                onChange={onCommentChange} 
+                style={{width: '70%', height: '1.5rem'}}
+              />
+            </div>
+          </div>
+
+          <button 
+            style={{backgroundColor: 'red', border: '2px solid black', padding: 10, font: 20, fontWeight: 600}}
+            onClick={() => onClickSunDay()}
+          >
+            주일예배 세팅 업데이트
+          </button>
+        </div>
       </SettingContainer>
 
       <div style={{fontSize: 16, fontWeight: 600, marginBottom: 28, marginTop: 28, backgroundColor:'lightgray', padding: 10}}>신청자 명단 확인</div>

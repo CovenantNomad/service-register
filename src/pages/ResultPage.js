@@ -141,7 +141,11 @@ const ResultPage = () => {
             {result ? (
               <>
                 <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{registerData.name} {registerData.position}님 </div>
-                <div style={{fontSize: '1.5rem', marginBottom: '0.5rem', color: 'blue'}}>{registerData.title} 신청에 성공하셨습니다.</div>
+                {setting.isWeekday ? (
+                  <div style={{fontSize: '1.5rem', marginBottom: '0.5rem', color: 'blue'}}>{registerData.title} 신청에 성공하셨습니다.</div>
+                ) : (
+                  <div style={{fontSize: '1.5rem', marginBottom: '0.5rem', color: 'blue'}}>{registerData.title} {registerData.serviceTime} 신청에 성공하셨습니다.</div>
+                )}
                 <div style={{fontSize: '1.25rem', marginBottom: '2rem'}}>많은 은혜 받으시길 바랍니다</div>
 
                 <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>
@@ -160,7 +164,11 @@ const ResultPage = () => {
               <>
                 <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>{registerData.name} {registerData.position}님 </div>
                 <div style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>죄송합니다.</div>
-                <div style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'red'}}>{registerData.title} 신청이 마감되었습니다.</div>
+                {setting.isWeekday ? (
+                  <div style={{fontSize: '1.5rem', marginBottom: '0.5rem', color: 'blue'}}>{registerData.title} 신청이 마감되었습니다.</div>
+                ) : (
+                  <div style={{fontSize: '1.5rem', marginBottom: '0.5rem', color: 'blue'}}>{registerData.title} {registerData.serviceTime} 신청이 마감되었습니다.</div>
+                )}
 
                 <CloseButton onClick={onClickClose}>페이지 닫기</CloseButton>
                 <div 

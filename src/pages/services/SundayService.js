@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components'
-import { Firebase, db } from '../../config/firebaseConfig'
 import { SettingContext } from '../../context/SettingContext'
 
 import NavBar from '../../components/NavBar'
@@ -10,61 +9,32 @@ import { Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 
 
 const SundayService = () => {
-  const [ setting ] = useContext(SettingContext)
-  const { register, handleSubmit, errors, formState, control } = useForm()
+  const [ setting, setSetting ] = useContext(SettingContext)
+  const { register, handleSubmit, errors, control } = useForm()
   const history = useHistory();
 
-  console.log(setting)
+  const onSubmit = (data) => {
+    if (!setting.isSubmitting) {
 
-  const decrement = Firebase.firestore.FieldValue.increment(-1)
-  const batch = db.batch();
-  
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-  const onSubmit = async data => {
-    if (!formState.isSubmitting){
-      await sleep(500);
+      setSetting({
+        ...setting,
+        isSubmitting: true,
+      })
 
       const submitData = {
         ...data,
+        title: '주일예배',
+        reservationDate: setting.sunday,
         submitTime: new Date()
       }
-      const statsRef = db.collection(setting.title).doc(data.serviceTime).collection(setting.reservationDate).doc('--stats--');
-      const newuserRef = db.collection(setting.title).doc(data.serviceTime).collection(setting.reservationDate).doc();
-
-      return db.runTransaction((transaction) => {
-        return transaction.get(statsRef).then((statsDoc) => {
-          if (statsDoc.data().ReservationCount > 0){
-            batch.set(newuserRef, submitData);
-            batch.set(statsRef, { ReservationCount: decrement }, {merge: true})
-            batch.commit()
-          } else {
-            console.log('예약실패')
-            history.push({
-              pathname: "/service-register/result", 
-              state: {
-                result: false, 
-                detail: submitData
-              }
-            })
-            return Promise.reject('실패')
-            
-          }
-        })
-      }).then(() => {
-        console.log('예약성공')
-        history.push({
-          pathname: "/service-register/result", 
-          state: {
-            result: true, 
-            detail: submitData
-          }
-        })
-      }).catch((error) => {
-        console.log(error)
+      history.push({
+        pathname: "/service-register/result", 
+        payload: submitData
       })
+      console.log(submitData)
+      console.log('제출하였습니다')
     } else {
-      console.log('제출 중입니다.')
+      console.log('제출중입니다')
     }
   }
 
@@ -131,7 +101,7 @@ const SundayService = () => {
           {errors.serviceTime && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>예배시간을 선택해주세요</div>}
         </InputContainer>
         <InputContainer>
-          <SubmitButton type="submit" disabled={formState.isSubmitting}>예배신청하기</SubmitButton>
+          <SubmitButton type="submit" disabled={setting.isSubmitting}>예배신청하기</SubmitButton>
         </InputContainer>
       </InserForm>
     </Container>

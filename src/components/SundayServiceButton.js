@@ -1,19 +1,17 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components'
 
-import { SettingContext } from '../context/SettingContext'
 import LinkedButton from './LinkedButton'
 
-const SundayServiceButton = ({ remaining, open, linkTo}) => {
-  const [ setting ] = useContext(SettingContext)
+const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
 
   let latestDay = new Date();
   latestDay.setDate(latestDay.getDate() + (0 + 7 - latestDay.getDay()) % 7);
 
   const handleClick = (e) => {
-    if (!setting.openSunDay) {
+    if (!open) {
       e.preventDefault()
-    } else if (setting.openSunDay && remaining[0] <= 0 && remaining[1] <= 0 && remaining[2] <= 0 && remaining[3] <= 0 && remaining[4] <= 0) {
+    } else if (open && remaining[0] <= 0 && remaining[1] <= 0 && remaining[2] <= 0 && remaining[3] <= 0 && remaining[4] <= 0) {
       e.preventDefault()
     }
   }
@@ -49,7 +47,7 @@ const SundayServiceButton = ({ remaining, open, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                {remaining[0] < 0 ? 0 : remaining[0]}/70명
+                {remaining[0] < 0 ? 0 : remaining[0]}/{total[0]}
               </CounterContainer>
             </BodyContainer>
 
@@ -72,7 +70,7 @@ const SundayServiceButton = ({ remaining, open, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                {remaining[1] < 0 ? 0 : remaining[1]}/70명
+                {remaining[1] < 0 ? 0 : remaining[1]}/{total[1]}
               </CounterContainer>
             </BodyContainer>
             <BodyContainer>
@@ -94,7 +92,7 @@ const SundayServiceButton = ({ remaining, open, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                {remaining[2] < 0 ? 0 : remaining[2]}/70명
+                {remaining[2] < 0 ? 0 : remaining[2]}/{total[2]}
               </CounterContainer>
             </BodyContainer>
             
@@ -117,8 +115,8 @@ const SundayServiceButton = ({ remaining, open, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                <div>{remaining[3] < 0 ? 0 : remaining[3]}/40명</div>
-                <div style={{color: "#72BCEB"}}>선교회장 임명식</div>
+                <div>{remaining[3] < 0 ? 0 : remaining[3]}/{total[3]}</div>
+                {/* <div style={{color: "#72BCEB"}}>선교회장 임명식</div> */}
               </CounterContainer>
             </BodyContainer>
             
@@ -141,7 +139,7 @@ const SundayServiceButton = ({ remaining, open, linkTo}) => {
                 )}
               </AvailableContainer>
               <CounterContainer>
-                {remaining[4] < 0 ? 0 : remaining[4]}/70명
+                {remaining[4] < 0 ? 0 : remaining[4]}/{total[4]}
               </CounterContainer>
             </BodyContainer>
           </div>
@@ -156,7 +154,7 @@ const DateContainer = styled.div`
   flex: 1;
   align-items: center;
   justify-content: center;
-  color: black;
+  color: #fff;
   border: 2px #228be6 solid;
   background: #228be6;
   padding: 1rem 0;
@@ -164,14 +162,17 @@ const DateContainer = styled.div`
 `;
 const InfoContainer = styled.div`
   flex: 3;
-  padding-left: 10px;
   display: flex;
   flex-direction: column;
   padding: 1rem 0.75rem;
 `;
 const Header = styled.div`
-  padding-bottom: 1rem;
+  margin-top: 0.5rem;
+  padding-bottom: 1.5rem;
   color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 const BodyContainer = styled.div`
   display: flex;

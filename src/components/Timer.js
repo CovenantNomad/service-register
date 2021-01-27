@@ -11,7 +11,6 @@ const Timer = ({ title, date, settingFunction, forcingClose }) => {
   const [ setting, setSetting ] = useContext(SettingContext)
 
   let interval = useRef()
-  let settingRef = useRef(setting)
 
   const startTimer = () => {
     const countdownDate = date.getTime()
@@ -76,7 +75,7 @@ const Timer = ({ title, date, settingFunction, forcingClose }) => {
 const BackgroundContainer = styled.div`
   background-color: #73c6c9;
   /* box-sizing: border-box; */
-  width: 80%;
+  width: 90%;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -93,7 +92,7 @@ const TimerContainer = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 32px;
+  font-size: 1.75rem;
   font-weight: 900;
   display: flex;
   justify-content: center;
