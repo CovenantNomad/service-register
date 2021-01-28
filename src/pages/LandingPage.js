@@ -186,6 +186,7 @@ const LandingPage = () => {
             open={openSunDay}
             remaining={[ remainingSunDayFirst, remainingSunDaySecond, remainingSunDayThird, remainingSunDayFourth, remainingSunDaySixth ]}
             total={[ setting.sundayOneSeats, setting.sundayTwoSeats,  setting.sundayThreeSeats, setting.sundayFourSeats, setting.sundaySixSeats]}
+            comments={[ setting.commentSunOne, setting.commentSunTwo,  setting.commentSunThree, setting.commentSunFour, setting.commentSunSix ]}
             linkTo="/service-register/sunday"
           />
         </>

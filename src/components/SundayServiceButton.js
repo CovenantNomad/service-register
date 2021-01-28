@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import LinkedButton from './LinkedButton'
 
-const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
+const SundayServiceButton = ({ open, remaining, total, comments, linkTo}) => {
 
   let latestDay = new Date();
   latestDay.setDate(latestDay.getDate() + (0 + 7 - latestDay.getDay()) % 7);
@@ -48,6 +48,11 @@ const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
               </AvailableContainer>
               <CounterContainer>
                 {remaining[0] < 0 ? 0 : remaining[0]}/{total[0]}
+                {comments[0] ? (
+                  <div style={{color: "#72BCEB"}}>{comments[0]}</div>
+                ) : (
+                  <div></div>
+                )}
               </CounterContainer>
             </BodyContainer>
 
@@ -71,6 +76,11 @@ const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
               </AvailableContainer>
               <CounterContainer>
                 {remaining[1] < 0 ? 0 : remaining[1]}/{total[1]}
+                {comments[1] ? (
+                  <div style={{color: "#72BCEB"}}>{comments[1]}</div>
+                ) : (
+                  <div></div>
+                )}
               </CounterContainer>
             </BodyContainer>
             <BodyContainer>
@@ -93,6 +103,11 @@ const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
               </AvailableContainer>
               <CounterContainer>
                 {remaining[2] < 0 ? 0 : remaining[2]}/{total[2]}
+                {comments[2] ? (
+                  <div style={{color: "#72BCEB"}}>{comments[2]}</div>
+                ) : (
+                  <div></div>
+                )}
               </CounterContainer>
             </BodyContainer>
             
@@ -116,7 +131,11 @@ const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
               </AvailableContainer>
               <CounterContainer>
                 <div>{remaining[3] < 0 ? 0 : remaining[3]}/{total[3]}</div>
-                {/* <div style={{color: "#72BCEB"}}>선교회장 임명식</div> */}
+                {comments[3] ? (
+                  <div style={{color: "#72BCEB"}}>{comments[3]}</div>
+                ) : (
+                  <div></div>
+                )}
               </CounterContainer>
             </BodyContainer>
             
@@ -140,6 +159,11 @@ const SundayServiceButton = ({ open, remaining, total, linkTo}) => {
               </AvailableContainer>
               <CounterContainer>
                 {remaining[4] < 0 ? 0 : remaining[4]}/{total[4]}
+                {comments[4] ? (
+                  <div style={{color: "#72BCEB"}}>{comments[4]}</div>
+                ) : (
+                  <div></div>
+                )}
               </CounterContainer>
             </BodyContainer>
           </div>
