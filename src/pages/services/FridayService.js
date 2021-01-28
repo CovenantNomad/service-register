@@ -49,7 +49,7 @@ const FridayService = () => {
         <InputContainer>
           <Title>이름</Title>
           <Input name="name" placeholder="이름을 입력해주세요" ref={register({ required: true, maxLength: 4 })}/>
-          {errors.name && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>한 사람 본인 이름만 입력해주세요</div>}
+          {errors.name && <div style={{color: 'red', marginTop: 5, marginLeft: 5}}>본인 한사람 이름만 입력해주세요</div>}
         </InputContainer>
         <InputContainer>
           <Title>직분</Title>
